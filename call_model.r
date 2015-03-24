@@ -1,18 +1,24 @@
 		#  Call frogs analysis
 		#  02/2015
-		#  Lukacs Lab
-####################################################################################################
+		#  Lukacs Lab															 	
+#################################################################################
 		#  Load packages
 		require(R2jags)
-####################################################################################################
-		#  Load data
+#################################################################################
+		#  File path to common directory
+		wd <- paste("C:/Users/", tolower(Sys.info()[["login"]]),
+					"/Documents/GitHub/Columbia-Spotted-Frogs",
+					sep = "")
+#################################################################################
+		#  Load data - different on every computer...data owned by USGS and not
+		#  publicly available on purpose
 		load("C:/frogs/frog_dat_list.RData")		
-####################################################################################################
+#################################################################################
 		#  Manipulate raw data
 		#  Skipped for now...
 		
 		#  Format for JAGS
-		source("C:/frogs/data_fun.r")
+		source(file.path(wd, "data_manip", "data_fun.r"))
 		jags_dat <- data_fun(frog_dat$ehj)
 		#  Cheap fix
 		jags_dat$eh <- sapply(jags_dat$eh, as.numeric)
@@ -33,7 +39,7 @@
 			data = jags_dat,
 			inits = jags_inits,
 			parameters = parms,
-			"C:/frogs/model_skeleton.txt",
+			file.path(wd, "models", "model_skeleton.txt"),
 			n.chains = 3,
 			n.thin = 1,
 			n.burnin = 50,
@@ -48,7 +54,7 @@
 				data = jags_dat,
 				inits = jags_inits,
 				parameters = parms,
-				"C:/frogs/model_skeleton.txt",
+				file.path(wd, "models", "model_skeleton.txt"),
 				n.chains = 3,
 				n.thin = 1,
 				n.burnin = 500,
@@ -57,12 +63,9 @@
 		}
 ####################################################################################################
 		#  If desired save output of JAGS run
-		save(out, file = paste("frogs_surv_", format(as.POSIXlt(Sys.time()), "%d%b%y_%H%M%S"), 
-				".RData", sep = ""))
+		save(out, file = file.path(wd, "output", paste("frogs_surv_", 
+				format(as.POSIXlt(Sys.time()), "%d%b%y_%H%M%S"), ".RData", 
+				sep = ""))
 ####################################################################################################
-		#  Plotting scripts
-		source("C:/frogs/plot_jags.r")
-		plot_jags(out)
-		#  If desired save plots
-		savePlot()
+	#  End
 		
