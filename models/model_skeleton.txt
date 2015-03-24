@@ -1,0 +1,34 @@
+		#  Jags code for frog analysis
+		#  02/2015
+		#  Lukacs Lab
+####################################################################################################
+		#  Define model
+		model{
+			
+			#  Priors
+			mu.phi ~ dnorm(0, 0.001)T(-10, 10)
+			mu.p ~ dnorm(0, 0.001)T(-10, 10)
+			
+			#  For monitoring
+			mean.phi <- 1/(1 + (exp(-mu.phi)))
+			mean.p <- 1/(1 + (exp(-mu.p)))
+			
+			#  Linear predictor
+			for(i in 1:nind){
+				for(t in 1:(n.occs - 1)){
+					logit(phi[i,t]) <- mu.phi
+					logit(p[i,t]) <- mu.p
+				}
+			}
+			
+			#  Likelihood
+			for(i in 1:nind){
+				z[i, first[i]] <- 1
+				for(t in (first[i]+1):n.occs){
+					mu1[i,t] <- phi[i, t-1] * z[i, t-1]
+					z[i, t] ~ dbern(mu1[i,t])
+					mu2[i,t] <- p[i,t-1] * z[i,t]
+					eh[i,t] ~ dbern(mu2[i,t])
+				}
+			}		
+		}
