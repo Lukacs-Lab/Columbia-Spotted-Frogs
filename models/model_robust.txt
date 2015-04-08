@@ -1,8 +1,11 @@
-		#  Jags code for frog analysis
+ 		#  Jags code for frog analysis
 		#  02/2015
 		#  Lukacs Lab
 ####################################################################################################
-		#  Define model
+		require(R2jags)
+		setwd("C:/frogs")
+		
+		#  Define model - Null model
 		model{
 			
 			#  Priors
@@ -44,3 +47,205 @@
 				}
 			}		
 		}
+		
+		# Bundle data
+		data <- list(eh = eh, z = z, nind = nind, n_prim = n_prim, n_sec = n_sec)
+
+		# Initial values
+		inits <- function(){
+		list("mean.phi"=runif(1),"mean.p"=runif(1))
+			}
+			
+		# Parameters monitored 
+		parameters <- c("mean.phi", "mean.p")
+		
+		# MCMC settings
+		ni <- 10000
+		nt <- 1
+		nb <- 1000
+		nc <- 3
+
+		survival_null <- jags(data = data, inits = inits, parameters.to.save = parameters,
+			model.file = "survival_null.txt", n.chains = nc, n.thin = nt, n.iter = ni, n.burnin = nb, 
+			DIC = TRUE, working.directory = getwd())
+		print(survival_null)
+		alarm()
+	
+		# See Output
+		ls()
+		survival_null
+		names(survival_null)
+		str(survival_null)
+
+		which(survival_null$summary[,8] > 1.1) #none 
+
+		#Traceplots
+		traceplot(survival_null)
+		survival_null$BUGSoutput
+
+		require(mcmcplots)
+		mcmcplot(survival_null)
+		
+####################################################################################################
+		#  Define model - Toe covariate
+		model{
+			
+			#  Priors
+			mu.phi ~ dnorm(0, 0.001)T(-10, 10)
+			mu.p ~ dnorm(0, 0.001)T(-10, 10)
+			beta ~ dnorm(0, 0.001)T(-10, 10)
+			
+			#  For monitoring
+			mean.phi <- 1/(1 + (exp(-mu.phi)))
+			#	loops over primary sessions
+			for (w in 1:n_prim) {		
+				# loop over secondary sessions to calculate probability of detection
+				for (t in 1:n_sec) {
+					mean.p[w, t] <- 1/(1 + (exp(-mu.p)))
+					temp[w, t] <- 1-mean.p[w,t]
+				}
+				p_star[w] <- 1-prod(temp[w,])
+			}
+			
+			#  Linear predictor
+			for(i in 1:nind){
+				for(t in 1:(n_prim - 1)){
+					logit(phi[i,t]) <- mu.phi + beta * toe[i,t]
+					for(q in 1:(n_sec[t])) {
+						logit(p[i,t,q]) <- mu.p
+					}
+				}
+			}
+			
+			#  Likelihood
+			for(i in 1:nind){
+				z[i, first[i]] <- 1
+				for(t in (first[i]+1):n_prim){  
+					mu1[i,t] <- phi[i, t-1] * z[i, t-1]
+					z[i, t] ~ dbern(mu1[i,t])
+					for (q in 1:n_sec[t]) {
+						mu2[i,t,q] <- p[i,t-1,q] * z[i,t]
+						eh[i,t,q] ~ dbern(mu2[i,t,q])
+					}
+				}
+			}		
+		}
+
+				# Bundle data
+		data <- list(eh = eh, z = z, nind = nind, n_prim = n_prim, n_sec = n_sec, toe = toe)
+
+		# Initial values
+		inits <- function(){
+		list("mean.phi"=runif(1),"mean.p"=runif(1),"beta"=runif(1))
+			}
+			
+		# Parameters monitored 
+		parameters <- c("mean.phi", "mean.p", "beta")
+		
+		# MCMC settings
+		ni <- 10000
+		nt <- 1
+		nb <- 1000
+		nc <- 3
+
+		survival_toe <- jags(data = data, inits = inits, parameters.to.save = parameters,
+			model.file = "survival_toe.txt", n.chains = nc, n.thin = nt, n.iter = ni, n.burnin = nb, 
+			DIC = TRUE, working.directory = getwd())
+		print(survival_toe)
+		alarm()
+	
+		# See Output
+		ls()
+		survival_toe
+		names(survival_toe)
+		str(survival_toe)
+
+		#Traceplots
+		traceplot(survival_toe)
+		survival_toe$BUGSoutput
+
+		require(mcmcplots)
+		mcmcplot(survival_toe)
+		
+####################################################################################################
+		#  Define model - Toe and weight covariates
+		model{
+			
+			#  Priors
+			mu.phi ~ dnorm(0, 0.001)T(-10, 10)
+			mu.p ~ dnorm(0, 0.001)T(-10, 10)
+			beta1 ~ dnorm(0, 0.001)T(-10, 10)
+			beta2 ~ dnorm(0, 0.001)T(-10, 10)
+			
+			#  For monitoring
+			mean.phi <- 1/(1 + (exp(-mu.phi)))
+			#	loops over primary sessions
+			for (w in 1:n_prim) {		
+				# loop over secondary sessions to calculate probability of detection
+				for (t in 1:n_sec) {
+					mean.p[w, t] <- 1/(1 + (exp(-mu.p)))
+					temp[w, t] <- 1-mean.p[w,t]
+				}
+				p_star[w] <- 1-prod(temp[w,])
+			}
+			
+			#  Linear predictor
+			for(i in 1:nind){
+				for(t in 1:(n_prim - 1)){
+					logit(phi[i,t]) <- mu.phi + beta1 * toe[i,t] + beta2 * weight[i,t]
+					for(q in 1:(n_sec[t])) {
+						logit(p[i,t,q]) <- mu.p
+					}
+				}
+			}
+			
+			#  Likelihood
+			for(i in 1:nind){
+				z[i, first[i]] <- 1
+				for(t in (first[i]+1):n_prim){  
+					mu1[i,t] <- phi[i, t-1] * z[i, t-1]
+					z[i, t] ~ dbern(mu1[i,t])
+					for (q in 1:n_sec[t]) {
+						mu2[i,t,q] <- p[i,t-1,q] * z[i,t]
+						eh[i,t,q] ~ dbern(mu2[i,t,q])
+					}
+				}
+			}		
+		}
+
+				# Bundle data
+		data <- list(eh = eh, z = z, nind = nind, n_prim = n_prim, n_sec = n_sec, toe = toe, weight = weight)
+
+		# Initial values
+		inits <- function(){
+		list("mean.phi"=runif(1),"mean.p"=runif(1),"beta1"=runif(1), "beta2"=runif(1))
+			}
+			
+		# Parameters monitored 
+		parameters <- c("mean.phi", "mean.p", "beta1", "beta2")
+		
+		# MCMC settings
+		ni <- 10000
+		nt <- 1
+		nb <- 1000
+		nc <- 3
+
+		survival_toe_weight <- jags(data = data, inits = inits, parameters.to.save = parameters,
+			model.file = "survival_toe_weight.txt", n.chains = nc, n.thin = nt, n.iter = ni, n.burnin = nb, 
+			DIC = TRUE, working.directory = getwd())
+		print(survival_toe_weight)
+		alarm()
+	
+		# See Output
+		ls()
+		survival_toe_weight
+		names(survival_toe_weight)
+		str(survival_toe_weight)
+
+		#Traceplots
+		traceplot(survival_toe_weight)
+		survival_toe_weight$BUGSoutput
+
+		require(mcmcplots)
+		mcmcplot(survival_toe_weight)
+				
