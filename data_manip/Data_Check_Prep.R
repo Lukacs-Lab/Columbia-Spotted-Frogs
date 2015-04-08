@@ -1,3 +1,5 @@
+# Charlie Henderson
+# 4/8/2015
 # Frog Data Extraction
 ################################################################################
 library(stringr)
