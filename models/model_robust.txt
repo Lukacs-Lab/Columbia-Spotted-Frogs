@@ -16,7 +16,7 @@
 			mean.phi <- 1/(1 + (exp(-mu.phi)))
 			#	loops over primary sessions
 			for (w in 1:n_prim) {		
-				# loop over secondary sessions to calc prob of dectection
+				# loop over secondary sessions to calculate probability of detection
 				for (t in 1:n_sec) {
 					mean.p[w, t] <- 1/(1 + (exp(-mu.p)))
 					temp[w, t] <- 1-mean.p[w,t]
