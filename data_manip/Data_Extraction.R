@@ -30,16 +30,16 @@ extract_fun <- function(col_ext, col_new, sub_0 = T){
     out <- tmp %>%
             gather_("occ", col_new, 2:ncol(.), convert = T) %>%
             arrange(Index) %>% 
-            mutate(prim = gsub(".*([1-9][0-9]?)_.*([1-9]).*", "\\1", occ),
-                   sec = gsub(".*([1-9][0-9]?)_.*([1-9]).*", "\\2", occ)) %>%
+            mutate(prim = gsub("[A-Za-z]*([1-9][0-9]?)_.*", "\\1", occ),
+                   sec = gsub(".*_[A-Za-z]*([1-9]).*", "\\1", occ)) %>%
             select(-occ)
 
     }else{
     out <- tmp %>%
             arrange(Index)
   }
-
 }
+# Test comment here
 
 # Example call
 xobs <- list("eh" = extract_fun("_Sec", "eh"), 
