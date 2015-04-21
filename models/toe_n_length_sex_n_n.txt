@@ -75,13 +75,13 @@
 			nc <- 3
 
 			toe_n_length_sex_n_n <- jags.parallel(data = data, 
-											      inits = inits, 
-										          parameters.to.save = parameters,
-											      model.file = "toe_n_length_sex_n_n.txt", 
-											      n.chains = nc, 
-											      n.thin = nt, 
-											      n.iter = ni, 
-											      n.burnin = nb,)
+												  inits = inits, 
+												  parameters.to.save = parameters,
+												  model.file = "toe_n_length_sex_n_n.txt", 
+												  n.chains = nc, 
+												  n.thin = nt, 
+												  n.iter = ni, 
+												  n.burnin = nb,)
 			print(toe_n_length_sex_n_n)
 			alarm()
 		
@@ -91,11 +91,11 @@
 			names(toe_n_length_sex_n_n)
 			str(toe_n_length_sex_n_n)
 
-			#Traceplots
+			# Traceplots
 			traceplot(toe_n_length_sex_n_n)
 			mcmcplot(toe_n_length_sex_n_n)	
 
-			#Histograms of parameters
+			# Histograms of parameters
 			hist(toe_n_length_sex_n_n$BUGS$sims.list$mean.phi)
 			hist(toe_n_length_sex_n_n$BUGS$sims.list$mean.p)
 			hist(toe_n_length_sex_n_n$BUGS$sims.list$p_star)

@@ -89,11 +89,11 @@
 			names(toe_weight_n_n_n_n)
 			str(toe_weight_n_n_n_n)
 
-			#Traceplots
+			# Traceplots
 			traceplot(toe_weight_n_n_n_n)
 			mcmcplot(toe_weight_n_n_n_n)	
 
-			#Histograms of parameters
+			# Histograms of parameters
 			hist(toe_weight_n_n_n_n$BUGS$sims.list$mean.phi)
 			hist(toe_weight_n_n_n_n$BUGS$sims.list$mean.p)
 			hist(toe_weight_n_n_n_n$BUGS$sims.list$p_star)
