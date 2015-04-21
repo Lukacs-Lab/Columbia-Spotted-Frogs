@@ -39,14 +39,12 @@ extract_fun <- function(col_ext, col_new, sub_0 = T){
             arrange(Index)
   }
 }
-# Test comment here
 
 # Example call
 xobs <- list("eh" = extract_fun("_Sec", "eh"), 
               "weight" = extract_fun("Weight", "weight"), 
               "length" = extract_fun("SVL", "length"),
-              "toes" = extract_fun("toes", "toes"),
-             "first" = extract_fun("First.Marked", "first"))
+              "toes" = extract_fun("toes", "toes"))
 
 # Things to check: 
 # Is NA different than <NA>?

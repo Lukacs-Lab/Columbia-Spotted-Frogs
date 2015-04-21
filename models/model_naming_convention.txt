@@ -1,0 +1,32 @@
+		#  Model list and naming convention for frog analysis
+		#  04/2015
+		#  Lukacs Lab
+		
+Model list:
+1. Toe 									
+2. Toe + Weight 
+3. Toe + Length
+4. Toe + Sex
+5. Toe + Weight + Sex
+6. Toe + Length + Sex
+7. Toe + Weight + Sex + Weight*Sex
+8. Toe + Length + Sex + Length*Sex
+
+###Weight and length are both for the individual at its first primary period capture as a juvenile.
+###If more than one weight or length measurement taken within a primary period (i.e., at multiple secondary periods),
+###these are averaged for a single measurement.
+
+File names - All covariate order:
+toe_weight_length_sex_ws_ls.txt
+###"ws" and "ls" are interaction terms for Weight*Sex and Length*Sex, respectively.
+
+1. toe_n_n_n_n_n.txt
+2. toe_weight_n_n_n_n.txt
+3. toe_n_length_n_n_n.txt
+4. toe_n_n_sex_n_n.txt
+5. toe_weight_n_sex_n_n.txt
+6. toe_n_length_sex_n_n.txt
+7. toe_weight_n_sex_ws_n.txt
+8. toe_n_length_sex_n_ls.txt
+
+

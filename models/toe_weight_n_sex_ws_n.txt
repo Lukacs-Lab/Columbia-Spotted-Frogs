@@ -1,0 +1,115 @@
+ 		#  Jags code for frog analysis 
+		#  04/2015
+		#  Lukacs Lab
+####################################################################################################
+		require(R2jags)
+		require(mcmcplots)
+		setwd("C:/frogs")
+####################################################################################################
+		#  Define model - Toe, weight, sex and weight*sex covariates
+		model{
+			
+			#  Priors
+			mu.phi ~ dnorm(0, 0.001)T(-10, 10)
+			mu.p ~ dnorm(0, 0.001)T(-10, 10)
+			beta1 ~ dnorm(0, 0.001)T(-10, 10)
+			beta2 ~ dnorm(0, 0.001)T(-10, 10)
+			beta3 ~ dnorm(0, 0.001)T(-10, 10)
+			beta4 ~ dnorm(0, 0.001)T(-10, 10)
+			
+			#  For monitoring
+			mean.phi <- 1/(1 + (exp(-mu.phi)))
+			#	loops over primary sessions
+			for (w in 1:n_prim) {		
+				# loop over secondary sessions to calculate probability of detection
+				for (t in 1:n_sec) {
+					mean.p[w, t] <- 1/(1 + (exp(-mu.p)))
+					temp[w, t] <- 1-mean.p[w,t]
+				}
+				p_star[w] <- 1-prod(temp[w,])
+			}
+			
+			#  Linear predictor
+			for(i in 1:nind){
+				for(t in 1:(n_prim - 1)){
+					logit(phi[i,t]) <- mu.phi + beta1 * toe[i] + beta2 * weight[i] + beta3 * sex[i] + beta4 * weight[i]*sex[i]
+					for(q in 1:(n_sec[t])) {
+						logit(p[i,t,q]) <- mu.p
+					}
+				}
+			}
+			
+			#  Likelihood
+			for(i in 1:nind){
+				z[i, first[i]] <- 1
+				for(t in (first[i]+1):n_prim){  
+					mu1[i,t] <- phi[i, t-1] * z[i, t-1]
+					z[i, t] ~ dbern(mu1[i,t])
+					for (q in 1:n_sec[t]) {
+						mu2[i,t,q] <- p[i,t-1,q] * z[i,t]
+						EH[i,t,q] ~ dbern(mu2[i,t,q])
+					}
+				}
+			}		
+		}
+
+			# Bundle data
+			data <- list(EH = EH, nind = nind, n_prim = n_prim, n_sec = n_sec, toe = toe, weight = weight, sex = sex)
+
+			# Initial values
+			
+			# Function to create a matrix of initial vales for latent state z
+			eh.init <- function(eh, f){
+				for (i in 1:dim(eh)[1]){eh[i,1:f[i]] <- NA}
+				return(eh)
+				}
+				
+			inits <- function(){
+			list("mu.phi"=runif(1),
+				 "mu.p"=runif(1), 
+				 "beta1"=runif(1),
+				 "beta2"=runif(1),
+				 "beta3"=runif(1),
+				 "beta4"=runif(1),
+				 "z= eh.init(EH,f)") # Latent (true) state of individual i at time t
+				}
+				
+			# Parameters monitored 
+			parameters <- c("mean.phi", "mean.p", "p_star", "beta1", "beta2", "beta3", "beta4")
+			
+			# MCMC settings
+			ni <- 10000
+			nt <- 1
+			nb <- 1000
+			nc <- 3
+
+			toe_weight_n_sex_ws_n <- jags.parallel(data = data, 
+												   inits = inits, 
+												   parameters.to.save = parameters,
+												   model.file = "toe_weight_n_sex_ws_n.txt", 
+												   n.chains = nc, 
+												   n.thin = nt, 
+												   n.iter = ni, 
+												   n.burnin = nb,)
+			print(toe_weight_n_sex_ws_n)
+			alarm()
+		
+			# See Output
+			ls()
+			toe_weight_n_sex_ws_n
+			names(toe_weight_n_sex_ws_n)
+			str(toe_weight_n_sex_ws_n)
+
+			# Traceplots
+			traceplot(toe_weight_n_sex_ws_n)
+			mcmcplot(toe_weight_n_sex_ws_n)		
+		
+			# Histograms of parameters
+			hist(toe_weight_n_sex_ws_n$BUGS$sims.list$mean.phi)
+			hist(toe_weight_n_sex_ws_n$BUGS$sims.list$mean.p)
+			hist(toe_weight_n_sex_ws_n$BUGS$sims.list$p_star)
+			hist(toe_weight_n_sex_ws_n$BUGS$sims.list$beta1)
+			hist(toe_weight_n_sex_ws_n$BUGS$sims.list$beta2)
+			hist(toe_weight_n_sex_ws_n$BUGS$sims.list$beta3)
+			hist(toe_weight_n_sex_ws_n$BUGS$sims.list$beta4)
+			
