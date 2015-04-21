@@ -97,7 +97,7 @@ fsvl <- inner_join(fcap, svl, by = "Index") %>%
           filter(Prim.Sec.First.Marked == fm2 & !is.na(length)) %>%
           mutate(length = as.numeric(length)) %>%
           # change length filter here
-          filter( length >= 20 & length <= 37) %>%
+          filter( length >= 20 & length <= 38) %>%
           select(Index, eh, fm, length)
 
 
