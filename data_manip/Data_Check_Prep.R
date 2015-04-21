@@ -13,8 +13,44 @@ x <- read.csv("C:/frog/Frog.csv", as.is = T)
 frog <- tbl_df(x)
 
 # source Anna's code for extracting 
-anna <- "C:/Users/charles.henderson/Documents/GitHub/Columbia-Spotted-Frogs/data_manip/Data_Extraction.R"
-source(anna)
+#anna <- "C:/Users/charles.henderson/Documents/GitHub/Columbia-Spotted-Frogs/data_manip/Data_Extraction.R"
+#source(anna)
+
+#########################################################################
+# Anna's fixed code to use until I figure out how to download from github
+# then can uncomment above code
+
+extract_fun <- function(col_ext, col_new, sub_0 = T){
+  #  Takes pattern to match using contains(), must be a character string that matches some column(s) of the data
+  #  Returns a new list containing only the requested data
+  if(sub_0){
+    x[x == 0] <- NA
+  }
+  
+  tmp <- x %>%
+    select(Index, contains(col_ext))
+  
+  if(ncol(tmp) > 2){
+    out <- tmp %>%
+      gather_("occ", col_new, 2:ncol(.), convert = T) %>%
+      arrange(Index) %>%
+      mutate(prim = gsub("[A-Za-z]*([1-9][0-9]?)_.*", "\\1", occ),
+             sec = gsub(".*_[A-Za-z]*([1-9]).*", "\\1", occ)) %>%
+      select(-occ)
+    
+  }else{
+    out <- tmp %>%
+      arrange(Index)
+  }
+}
+
+# Example call
+xobs <- list("eh" = extract_fun("_Sec", "eh"), 
+             "weight" = extract_fun("Weight", "weight"), 
+             "length" = extract_fun("SVL", "length"),
+             "toes" = extract_fun("toes", "toes"),
+             "first" = extract_fun("First.Marked", "first"))
+
 
 # look at list
 lapply(xobs, head)
@@ -23,42 +59,85 @@ lapply(xobs, head)
 # make dataframe of individuals who are juveniles at first capture
 ##################################################################
 
-# number of individuals in each category F, J, M, N, S
-table(xobs$eh$eh)
-eh <- extract_fun("_Sec", "eh")
-# extract individuals captured as juveniles
-t2 <- filter(eh, eh == "J" )
-nrow(t2)
-# group by Index
-t2b <- group_by(t2, Index)
-# determine number of unique individuals captured as juveniles
-summarise(t2b, nid = n_distinct(Index))
-#####################################################
-# extract sex/age and weight
-wt_age <- data.frame(extract_fun("_Sec", "eh"),
-                   extract_fun("Weight", "wt")[,-1],
-                   extract_fun("First.Marked", "first")) %>%
-                      
-first <- mutate(wt_age, fm = paste(Index.1,Prim.Sec.First.Marked, sep = "_")) %>%
-            filter(eh =="J" & !is.na(wt))
-
-head(first)
-
-j_wt_age <- filter(wt_age, eh == "J" & !is.na(wt))
-head(j_wt_age, 50)
-summarise(j_wt_age, avg = mean(wt),
-                    min = min(wt),
-                    max = max(wt))
-
-#################################################################
-#################################################################
 
 # extracts when each individual is first marked
 first <- extract_fun("First.Marked", "first")
 
-test <- data.frame(extract_fun("First.Marked", "first"),
-                   sex = extract_fun("Sex", "sex")[,-1])
+# extracts age at capture extracts juveniles                      
+age <- data.frame(extract_fun("_Sec", "eh")) %>%                       
+  filter(eh == "J") 
 
-# make dataframe of extracted weight info
-wt <- extract_fun("Weight", "weight")
-head(wt, 20)
+# joins first marked and age "J" to create a dataframe of individuals that were
+# juveniles at first capture
+fcap <- inner_join(first, age, by = "Index") %>%
+  mutate(fm = paste(prim, sec, sep = "")) %>%
+  filter(Prim.Sec.First.Marked == fm)
+
+##############################################################################
+# extract weight at first capture data
+#############################################################################
+
+wt <- data.frame(extract_fun("Weight", "wt")) %>%
+          mutate(fm2 = paste(prim, sec, sep = "")) 
+          
+fwt <- inner_join(fcap, wt, by = "Index") %>%
+          filter(Prim.Sec.First.Marked == fm2 & !is.na(wt)) %>%
+          # change weight filter here
+          filter( wt >= 0.5 & wt <= 7) %>%
+          select(Index, eh, fm, wt)
+
+##############################################################################
+# extract length at first capture data
+#############################################################################
+
+svl <- data.frame(extract_fun("SVL", "length")) %>%
+            mutate(fm2 = paste(prim, sec, sep = ""))
+
+fsvl <- inner_join(fcap, svl, by = "Index") %>%
+          filter(Prim.Sec.First.Marked == fm2 & !is.na(length)) %>%
+          mutate(length = as.numeric(length)) %>%
+          # change length filter here
+          filter( length >= 20 & length <= 37) %>%
+          select(Index, eh, fm, length)
+
+
+#############################################################################
+# join wt and length data frames create weight to length ratio
+############################################################################
+
+fwl <- inner_join(fwt, fsvl, by = "Index") %>%
+              # add column with weight/length ratio
+              mutate(length = as.numeric(length), ratio = wt/length, eh = eh.x,
+                     fm = fm.x) %>%
+              select(Index, eh, fm, wt, length, ratio )
+              
+hist(wt_len$ratio)  
+  
+#############################################################################
+# toe clip data from individuals that were juveniles at first capture
+############################################################################
+
+toe <- extract_fun("toes", "toes")
+
+ftoe <- inner_join(fwl, toe, by = "Index") %>%
+            # number of toes removed <= 6 to eliminate individuals that lost 
+            # toes to something other than marking
+            filter(Number_Toes_Removed <= 7) %>%
+            mutate(toes = Number_Toes_Removed) %>%
+            select(-Number_Toes_Removed)
+                 
+hist(ftoe$Number_Toes_Removed)
+
+#############################################################################
+# sex of individuals that were juveniles at first capture
+############################################################################
+
+sex <- extract_fun("Sex", "sex")
+
+fsex <- inner_join(fwl, sex, by = "Index") %>%
+            filter(Sex == "M" | Sex == "F") 
+            
+
+
+#############################################################################
+#############################################################################
