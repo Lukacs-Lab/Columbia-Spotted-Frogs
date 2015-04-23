@@ -1,0 +1,71 @@
+		#  Model prep functions for JAGS frog analysis
+		#  04/2015
+		#  Lukacs Lab
+####################################################################################################
+		require(R2jags)
+		require(mcmcplots)
+		setwd("C:/frogs")
+####################################################################################################
+		#Initial values 
+		#Function to create a matrix of initial vales for latent state z
+			eh.init <- function(eh, f){
+				for (i in 1:dim(eh)[1]){eh[i,1:f[i]] <- NA}
+				return(eh)
+				}
+				
+		#Required initial values		
+			inits <- function(){
+			list("mu.phi"=runif(1),
+				 "mu.p"=runif(1), 
+				 "beta1"=runif(1,-5,5),
+				 "beta2"=runif(1,-5,5),
+				 "beta3"=runif(1,-5,5),
+				 "beta4"=runif(1,-5,5),
+				 "z"=eh.init(EH,f)) # Latent (true) state of individual i at time t
+				}
+				
+		# MCMC settings
+		ni <- 10000
+		nt <- 1
+		nb <- 1000
+		nc <- 3
+
+				
+		#Call JAGS
+		call_jags <- function("model txt file name", parallel=T ){###How do we pull this in from the file name of the model txt file?
+
+			out <- jags.parallel(data = data, 
+								 inits = inits, 
+							     parameters.to.save = parameters,
+								 model.file = "", ###How do we pull this in from the file name of the model txt file?
+								 n.chains = nc, 
+								 n.thin = nt, 
+								 n.iter = ni, 
+								 n.burnin = nb,)
+			print(out)
+			alarm()
+		
+			# Save output of JAGS run
+			save(out, file = file.path(wd, "out", paste("frogs_surv_", 
+				format(as.POSIXlt(Sys.time()), "%d%b%y_%H%M%S"), ".RData", 
+				sep = ""))
+		
+			# See Output
+			ls()
+			out
+			names(out)
+			str(out)
+
+			# Traceplots
+			traceplot(out)
+			mcmcplot(out)		
+		
+			# Histograms of parameters
+			hist(out$BUGS$sims.list$mean.phi)
+			hist(out$BUGS$sims.list$mean.p)
+			hist(out$BUGS$sims.list$p_star)
+			hist(out$BUGS$sims.list$beta1)
+			hist(out$BUGS$sims.list$beta2)
+			hist(out$BUGS$sims.list$beta3)
+			hist(out$BUGS$sims.list$beta4)
+		}
