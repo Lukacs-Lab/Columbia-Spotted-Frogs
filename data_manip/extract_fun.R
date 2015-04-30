@@ -21,7 +21,7 @@ extract_fun <- function(col_ext, col_new, sub_0 = T){
   #  Returns a new list containing only the requested data
   if(sub_0){
     x[x == ""] <- 0
-	  x[is.na(x)] <- 0
+    x[is.na(x)] <- 0
   }
   
   tmp <- x %>%
