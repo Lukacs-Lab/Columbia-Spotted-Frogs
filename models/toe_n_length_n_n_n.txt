@@ -1,0 +1,60 @@
+ 		#  Jags code for frog analysis 
+		#  04/2015
+		#  Lukacs Lab
+####################################################################################################
+		require(R2jags)
+		require(mcmcplots)
+		setwd("C:/frogs")
+####################################################################################################
+		#  Define model - Toe and length covariates
+		model{
+			
+			#  Priors
+			mu.phi ~ dnorm(0, 0.001)T(-10, 10)
+			mu.p ~ dnorm(0, 0.001)T(-10, 10)
+			beta1 ~ dnorm(0, 0.001)T(-10, 10)
+			beta2 ~ dnorm(0, 0.001)T(-10, 10)
+			
+			#  For monitoring
+			mean.phi <- 1/(1 + (exp(-mu.phi)))
+			#	loops over primary sessions
+			for (w in 1:n_prim) {		
+				# loop over secondary sessions to calculate probability of detection
+				for (t in 1:n_sec) {
+					mean.p[w, t] <- 1/(1 + (exp(-mu.p)))
+					temp[w, t] <- 1-mean.p[w,t]
+				}
+				p_star[w] <- 1-prod(temp[w,])
+			}
+			
+			#  Linear predictor
+			for(i in 1:nind){
+				for(t in 1:(n_prim - 1)){
+					logit(phi[i,t]) <- mu.phi + beta1 * toe[i] + beta2 * length[i]
+					for(q in 1:(n_sec[t])) {
+						logit(p[i,t,q]) <- mu.p
+					}
+				}
+			}
+			
+			#  Likelihood
+			for(i in 1:nind){
+				z[i, first[i]] <- 1
+				for(t in (first[i]+1):n_prim){  
+					mu1[i,t] <- phi[i, t-1] * z[i, t-1]
+					z[i, t] ~ dbern(mu1[i,t])
+					for (q in 1:n_sec[t]) {
+						mu2[i,t,q] <- p[i,t-1,q] * z[i,t]
+						EH[i,t,q] ~ dbern(mu2[i,t,q])
+					}
+				}
+			}		
+		}
+
+			# Bundle data
+			data <- list("EH", "nind", "n_prim", "n_sec", "toe", "length")
+
+			# Parameters monitored 
+			parameters <- c("mean.phi", "mean.p", "p_star", "beta1", "beta2")
+			
+			
