@@ -52,59 +52,9 @@
 		}
 
 			# Bundle data
-			data <- list(EH = EH, nind = nind, n_prim = n_prim, n_sec = n_sec, toe = toe, weight = weight)
+			data <- list("EH", "nind", "n_prim", "n_sec", "toe", "weight")
 
-			# Initial values
-			
-			# Function to create a matrix of initial vales for latent state z
-			eh.init <- function(eh, f){
-				for (i in 1:dim(eh)[1]){eh[i,1:f[i]] <- NA}
-				return(eh)
-				}
-				
-			inits <- function(){
-			list("mu.phi"=runif(1),
-				 "mu.p"=runif(1), 
-				 "beta1"=runif(1),
-				 "beta2"=runif(1),
-				 "z= eh.init(EH,f)") # Latent (true) state of individual i at time t
-				}
-				
 			# Parameters monitored 
 			parameters <- c("mean.phi", "mean.p", "p_star", "beta1", "beta2")
 			
-			# MCMC settings
-			ni <- 10000
-			nt <- 1
-			nb <- 1000
-			nc <- 3
-
-			toe_weight_n_n_n_n <- jags.parallel(data = data, 
-											    inits = inits, 
-										        parameters.to.save = parameters,
-											    model.file = "toe_weight_n_n_n_n.txt", 
-											    n.chains = nc, 
-											    n.thin = nt, 
-											    n.iter = ni, 
-												n.burnin = nb,)
-			print(toe_weight_n_n_n_n)
-			alarm()
-		
-			# See Output
-			ls()
-			toe_weight_n_n_n_n
-			names(toe_weight_n_n_n_n)
-			str(toe_weight_n_n_n_n)
-
-			# Traceplots
-			traceplot(toe_weight_n_n_n_n)
-			mcmcplot(toe_weight_n_n_n_n)	
-
-			# Histograms of parameters
-			hist(toe_weight_n_n_n_n$BUGS$sims.list$mean.phi)
-			hist(toe_weight_n_n_n_n$BUGS$sims.list$mean.p)
-			hist(toe_weight_n_n_n_n$BUGS$sims.list$p_star)
-			hist(toe_weight_n_n_n_n$BUGS$sims.list$beta1)
-			hist(toe_weight_n_n_n_n$BUGS$sims.list$beta2)			
-		
 			
