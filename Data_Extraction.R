@@ -49,4 +49,3 @@ xobs <- list("eh" = extract_fun("_Sec", "eh"),
 
 # Things to check: 
 # Is NA different than <NA>?
-# Do we need 0s or NAs in eh for the model?
