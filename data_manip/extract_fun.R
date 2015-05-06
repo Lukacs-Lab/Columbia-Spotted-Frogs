@@ -20,7 +20,8 @@ extract_fun <- function(col_ext, col_new, sub_0 = T){
   #  Takes pattern to match using contains(), must be a character string that matches some column(s) of the data
   #  Returns a new list containing only the requested data
   if(sub_0){
-    x[x == 0] <- NA
+    x[x == ""] <- 0
+    x[is.na(x)] <- 0
   }
   
   tmp <- x %>%
@@ -39,16 +40,12 @@ extract_fun <- function(col_ext, col_new, sub_0 = T){
             arrange(Index)
   }
 }
-# Test comment here
 
 # Example call
 xobs <- list("eh" = extract_fun("_Sec", "eh"), 
               "weight" = extract_fun("Weight", "weight"), 
               "length" = extract_fun("SVL", "length"),
-              "toes" = extract_fun("toes", "toes"),
-             "first" = extract_fun("First.Marked", "first"))
+              "toes" = extract_fun("toes", "toes"))
 
 # Things to check: 
 # Is NA different than <NA>?
-# Do we need 0s or NAs in eh for the model?
-# Should we change U in encounter history to NA?
