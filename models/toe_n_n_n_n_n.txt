@@ -2,21 +2,7 @@
 		#  04/2015
 		#  Lukacs Lab
 ####################################################################################################
-		#  Define parameters
-		ind <- fEH$Index
-		prim <- fEH$prim
-		sec <- fEH$sec
-				
-		n_ind <- length(unique(fEH$Index))
-		n_prim <- length(unique(fEH$prim))
-		n_sec <- length(unique(fEH$sec))
-		n_obs <- nrow(fEH)
-		
-		toe <- fEh$toe
-		weight <- fEH$sc_wt
-		length < - fEH$sc_ln
-		sex < - fEH$sex
-		
+
 		#  Define model - Toe covariate 
 		model{
 			
