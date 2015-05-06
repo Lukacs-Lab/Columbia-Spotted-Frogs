@@ -24,31 +24,23 @@
 			}
 			
 			#  Linear predictor
-			for(i in 1:nind){
-				for(t in 1:(n_prim - 1)){
-					logit(phi[i,t]) <- mu.phi + beta1 * toe[i]
-					for(q in 1:(n_sec[t])) {
-						logit(p[i,t,q]) <- mu.p
-					}
-				}
+			for(i in 1:n_obs){
+				logit(phi [ind[i], prim[i]] ) <- mu.phi + beta1 * toe[i]
+				logit(p [ind[i], prim[i], sec[i]] ) <- mu.p
 			}
 			
 			#  Likelihood
-			for(i in 1:nind){
+			for(i in 1:n_obs){
 				z[i, first[i]] <- 1
-				for(t in (first[i]+1):n_prim){  
-					mu1[i,t] <- phi[i, t-1] * z[i, t-1]
-					z[i, t] ~ dbern(mu1[i,t])
-					for (q in 1:n_sec[t]) {
-						mu2[i,t,q] <- p[i,t-1,q] * z[i,t]
-						EH[i,t,q] ~ dbern(mu2[i,t,q])
-					}
-				}
+				 	mu1[ind[i], (prim[i]+1)] <- phi[ind[i], prim[i]] * z[ind[i], prim[i]]
+					z[ind[i], (prim[i]+1)] ~ dbern(mu1[ind[i], prim[i]])
+						mu2[ind[i], prim[i], sec[i]] <- p[ind[i], prim[i], sec[i]] * z[ind[i], prim[i]]
+						EH[ind[i], prim[i], sec[i]] ~ dbern(mu2[ind[i], prim[i], sec[i]])
 			}		
 		}
 
 			# Bundle data
-			data <- list("EH", "nind", "n_prim", "n_sec", "toe")
+			data <- list("EH", "ind", "prim", "sec", "n_obs", " n_prim", "n_sec", "toe")
 
 							
 			# Parameters monitored 

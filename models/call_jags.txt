@@ -6,6 +6,66 @@
 		require(mcmcplots)
 		setwd("C:/frogs")
 ####################################################################################################
+		#  Run Charlie's function and define objects
+		ind <- fEH$Index
+		prim <- fEH$prim
+		sec <- fEH$sec
+				
+		n_ind <- length(unique(fEH$Index))
+		n_prim <- length(unique(fEH$prim))
+		n_sec <- length(unique(fEH$sec))
+		n_obs <- nrow(fEH)
+		
+		toe <- fEh$toe
+		weight <- fEH$sc_wt
+		length < - fEH$sc_ln
+		sex < - fEH$sex
+		
+		# Get model name with function
+		foo <- function(weight = T, length = T, sex = T, intx1 = T, 
+						intx2 = T, name = T, mod_name = NA){
+		
+			#  A function to create model name or directory from user inputs
+			#  Takes:  A series of logical statements about what to include in 
+			#   the model.  Each component represents a component of the model
+			#   except for name, which determines whether the model name or the
+			#   directory containing models is returned.  The directory currently
+			#   relies on the user having the working directory set prior to 
+			#   running this function.
+			#  Returns:  A character string describing the model name or the 
+			#   model directory with the model name appended to the directory.  
+			#   Currently only text (.txt) file names are created...every model 
+			#   name will include .txt.
+			
+			wt <- ifelse(weight, "weight", "n")
+					
+			len <- ifelse(length, "length", "n")
+			
+			sx <- ifelse(sex, "sex", "n")
+							
+			ws <- ifelse(intx1, "ws", "n")
+							
+			ls <- ifelse(intx2, "ls", "n")
+			
+			if(name){
+				mod_name <- paste("toe", wt, len, sx, ws, ls, sep = "_")
+				return(mod_name)
+			}else{
+				#  Assumes working directory is set to place where models are 
+				#   stored
+				mod_path <- file.path(getwd(), mod_name)
+				return(mod_path)
+			}
+		}
+	
+		# Execute foo - function to create model name	
+		foo(weight = T, 
+			length = F, 
+			sex = T, 
+			intx1 = T, 
+			intx2 = F, 
+			name = T)
+		
 		#Initial values 
 		#Function to create a matrix of initial vales for latent state z
 			eh.init <- function(eh, f){
@@ -24,20 +84,19 @@
 				 "z"=eh.init(EH,f)) # Latent (true) state of individual i at time t
 				}
 				
-		# MCMC settings
-		ni <- 10000
-		nt <- 1
-		nb <- 1000
-		nc <- 3
-
 				
 		#Call JAGS
-		call_jags <- function("model txt file name", parallel=T ){###How do we pull this in from the file name of the model txt file?
+		call_jags <- function(mod_name, 
+										parallel=T,
+										ni = 10000,
+										nt = 1,
+										nb = 1000,
+										nc = 3){
 
 			out <- jags.parallel(data = data, 
-								 inits = inits, 
+								 inits = inits(), 
 							     parameters.to.save = parameters,
-								 model.file = "", ###How do we pull this in from the file name of the model txt file?
+								 model.file = paste(mod_name,".txt", sep="") 
 								 n.chains = nc, 
 								 n.thin = nt, 
 								 n.iter = ni, 
@@ -46,16 +105,11 @@
 			alarm()
 		
 			# Save output of JAGS run
-			save(out, file = file.path(wd, "out", paste("frogs_surv_", 
+			save(out, file = file.path(wd, "out", paste(mod_name, 
 				format(as.POSIXlt(Sys.time()), "%d%b%y_%H%M%S"), ".RData", 
 				sep = ""))
 		
-			# See Output
-			ls()
-			out
-			names(out)
-			str(out)
-
+		
 			# Traceplots
 			traceplot(out)
 			mcmcplot(out)		
@@ -69,3 +123,9 @@
 			hist(out$BUGS$sims.list$beta3)
 			hist(out$BUGS$sims.list$beta4)
 		}
+		
+			## See Output
+			#ls()
+			#out
+			#names(out)
+			#str(out)
