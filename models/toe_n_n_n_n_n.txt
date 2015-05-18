@@ -7,49 +7,34 @@
 		model{
 			
 			#  Priors
-			mu.phi ~ dnorm(0, 0.001)T(-10, 10)
-			mu.p ~ dnorm(0, 0.001)T(-10, 10)
-			beta1 ~ dnorm(0, 0.001)T(-10, 10)
+			mu_phi ~ dnorm(0, 0.001)T(-5, 5)
+			mu_p ~ dnorm(0, 0.001)T(-5, 5)
+			beta1 ~ dnorm(0, 0.001)T(-5, 5)
 			
 			#  For monitoring
-			mean.phi <- 1/(1 + (exp(-mu.phi)))
+			mean_phi <- 1/(1 + (exp(-mu_phi)))
 			#	loops over primary sessions
 			for (w in 1:n_prim) {		
 				# loop over secondary sessions to calculate probability of detection
-				for (t in 1:n_sec) {
-					mean.p[w, t] <- 1/(1 + (exp(-mu.p)))
-					temp[w, t] <- 1-mean.p[w,t]
+				for (t in 1:n_sec[w]) {
+					mean_p[w, t] <- 1/(1 + (exp(-mu_p)))
+					temp[w, t] <- 1-mean_p[w,t]
 				}
-				p_star[w] <- 1-prod(temp[w,])
+				p_star[w] <- 1-prod(temp[w, 1:n_sec[w]])
 			}
 			
 			#  Linear predictor
 			for(i in 1:n_obs){
-				logit(phi [ind[i], prim[i]] ) <- mu.phi + beta1 * toe[i]
-				logit(p [ind[i], prim[i], sec[i]] ) <- mu.p
+				logit(phi[ind[i], prim[i], sec[i]]) <- mu_phi+beta1*toe[i]
+				logit(p[ind[i], prim[i], sec[i]]) <- mu_p
 			}
-			
+				
+	
 			#  Likelihood
 			for(i in 1:n_obs){
-				z[i, first[i]] <- 1
-				 	mu1[ind[i], (prim[i]+1)] <- phi[ind[i], prim[i]] * z[ind[i], prim[i]]
-					z[ind[i], (prim[i]+1)] ~ dbern(mu1[ind[i], prim[i]])
+				 	mu1[ind[i], prim[i]] <- phi[ind[i], prim[i], sec[i]] * z[ind[i], prim[i]]
+					z[ind[i], prim[i]] ~ dbern(mu1[ind[i], prim[i]])
 						mu2[ind[i], prim[i], sec[i]] <- p[ind[i], prim[i], sec[i]] * z[ind[i], prim[i]]
-						EH[ind[i], prim[i], sec[i]] ~ dbern(mu2[ind[i], prim[i], sec[i]])
+						y[ind[i]] ~ dbern(mu2[ind[i], prim[i], sec[i]])
 			}		
 		}
-
-			# Bundle data
-			data <- list("EH", "ind", "prim", "sec", "n_obs", " n_prim", "n_sec", "toe")
-
-							
-			# Parameters monitored 
-			parameters <- c("mean.phi", "mean.p", "p_star", "beta1")
-			
-			# MCMC settings
-			ni <- 10000
-			nt <- 1
-			nb <- 1000
-			nc <- 3
-
-			

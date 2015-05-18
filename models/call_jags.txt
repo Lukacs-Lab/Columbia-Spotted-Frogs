@@ -4,25 +4,45 @@
 ####################################################################################################
 		require(R2jags)
 		require(mcmcplots)
-		setwd("C:/frogs")
+		setwd("C:/frog")
 ####################################################################################################
-		#  Run Charlie's function and define objects
-		ind <- fEH$Index
-		prim <- fEH$prim
-		sec <- fEH$sec
-				
+		#   Parameters monitored  ---- MUST CHANGE THIS BY HAND FOR EACH MODEL
+		parameters <- c("mean.phi", "mean.p", "p_star", "beta1", "beta2", "beta3", "beta4")
+		
+		#  Source and run Charlie's function and define objects
+		source("C:/Users/sara.williams/Documents/GitHub/Columbia-Spotted-Frogs/data_manip/Data_Check_Prep.R")
+		fEH <- get_data()
+		fsex <- get_sex_data() 
+		
+		y <- as.numeric(fEH$cap)	
+		ind <- as.factor(fEH$Index)
+		ind <- as.numeric(ind)
+		prim <- as.factor(fEH$prim)
+		prim <- as.numeric(prim)
+		sec <- as.factor(fEH$sec)
+		sec <- as.numeric(sec)
+	
 		n_ind <- length(unique(fEH$Index))
-		n_prim <- length(unique(fEH$prim))
-		n_sec <- length(unique(fEH$sec))
+		n_prim <- length(unique(prim))
+		n_sec <- rep(NA,n_prim)	
+			for(i in 1:n_prim){
+				n_sec[i] <- length(unique(sec[prim==i]))
+			}
 		n_obs <- nrow(fEH)
+	
 		
-		toe <- fEh$toe
-		weight <- fEH$sc_wt
-		length < - fEH$sc_ln
-		sex < - fEH$sex
+		toe <- as.numeric(fEH$toe)
+		weight <- as.numeric(fEH$sc_wt)
+		length <- as.numeric(fEH$sc_len)
+		sex <- fsex$sex
 		
-		# Get model name with function
-		foo <- function(weight = T, length = T, sex = T, intx1 = T, 
+		# Bundle data
+		data <- list("y", "ind", "prim", "sec", "n_ind", "n_obs", "n_prim", "n_sec", "toe", "weight", "length", "sex")
+
+							
+			
+			# Get model name with function
+			foo <- function(weight = T, length = T, sex = T, intx1 = T, 
 						intx2 = T, name = T, mod_name = NA){
 		
 			#  A function to create model name or directory from user inputs
@@ -59,19 +79,18 @@
 		}
 	
 		# Execute foo - function to create model name	
-		foo(weight = T, 
-			length = F, 
-			sex = T, 
-			intx1 = T, 
-			intx2 = F, 
-			name = T)
+		mod_name <- foo(weight = F, 
+									length = F, 
+									sex = F, 
+									intx1 = F, 
+									intx2 = F, 
+									name = T)
 		
 		#Initial values 
 		#Function to create a matrix of initial vales for latent state z
-			eh.init <- function(eh, f){
-				for (i in 1:dim(eh)[1]){eh[i,1:f[i]] <- NA}
-				return(eh)
-				}
+			eh.init <- fEH$cap
+			eh.init[eh.init == 0] <- 1
+			
 				
 		#Required initial values		
 			inits <- function(){
@@ -81,33 +100,37 @@
 				 "beta2"=runif(1,-5,5),
 				 "beta3"=runif(1,-5,5),
 				 "beta4"=runif(1,-5,5),
-				 "z"=eh.init(EH,f)) # Latent (true) state of individual i at time t
+				 "z"=y) # Latent (true) state of individual i at time t
 				}
 				
 				
-		#Call JAGS
+		#  Call JAGS
 		call_jags <- function(mod_name, 
 										parallel=T,
-										ni = 10000,
+										ni = 100,
 										nt = 1,
-										nb = 1000,
-										nc = 3){
+										nb = 10,
+										nc = 3){ 
 
-			out <- jags.parallel(data = data, 
-								 inits = inits(), 
+						out <- jags(data = data, 
+								 inits = inits, 
 							     parameters.to.save = parameters,
-								 model.file = paste(mod_name,".txt", sep="") 
+								 model.file = paste("C:/Users/sara.williams/Documents/GitHub/Columbia-Spotted-Frogs/models/",mod_name,".txt", sep=""),
 								 n.chains = nc, 
 								 n.thin = nt, 
 								 n.iter = ni, 
-								 n.burnin = nb,)
+								 n.burnin = nb)
 			print(out)
 			alarm()
 		
 			# Save output of JAGS run
 			save(out, file = file.path(wd, "out", paste(mod_name, 
-				format(as.POSIXlt(Sys.time()), "%d%b%y_%H%M%S"), ".RData", 
-				sep = ""))
+				format(as.POSIXlt(Sys.time()), "%d%b%y_%H%M%S"), ".RData", sep = "")))
+		}
+		
+
+		call_jags(mod_name)
+		
 		
 		
 			# Traceplots
@@ -122,7 +145,7 @@
 			hist(out$BUGS$sims.list$beta2)
 			hist(out$BUGS$sims.list$beta3)
 			hist(out$BUGS$sims.list$beta4)
-		}
+
 		
 			## See Output
 			#ls()

@@ -13,7 +13,7 @@ x <- read.csv("C:/frog/Frog.csv", as.is = T)
 frog <- tbl_df(x)
 
 # source Anna's code for extracting 
-anna <- "C:/Users/charles.henderson/Documents/GitHub/Columbia-Spotted-Frogs/data_manip/extract_fun.R"
+anna <- "C:/Users/sara.williams/Documents/GitHub/Columbia-Spotted-Frogs/data_manip/extract_fun.R"
 source(anna)
 
 #########################################################################
@@ -27,7 +27,7 @@ source(anna)
 # 
 
 # look at list
-lapply(xobs, head)
+# lapply(xobs, head)
 
 get_data <- function(){
 
