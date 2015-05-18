@@ -18,23 +18,40 @@
 				# loop over secondary sessions to calculate probability of detection
 				for (t in 1:n_sec[w]) {
 					mean_p[w, t] <- 1/(1 + (exp(-mu_p)))
-					temp[w, t] <- 1-mean_p[w,t]
+					temp[w, t] <- 1 - mean_p[w,t]
 				}
-				p_star[w] <- 1-prod(temp[w, 1:n_sec[w]])
+				p_star[w] <- 1 - prod(temp[w, 1:n_sec[w]])
 			}
 			
 			#  Linear predictor
-			for(i in 1:n_obs){
-				logit(phi[ind[i], prim[i], sec[i]]) <- mu_phi+beta1*toe[i]
-				logit(p[ind[i], prim[i], sec[i]]) <- mu_p
+			for(i in 1:n_ind){
+        for(j in 1:n_prim){
+       	  logit(phi[i, j]) <- mu_phi + beta1 * toe[i]
+       	  for(k in 1:n_sec[j]){
+            logit(p[i, j, k]) <- mu_p
+          }
+        }
 			}
-				
-	
+
 			#  Likelihood
+			for(i in 1:n_ind){
+        for(j in 1:n_prim){
+          z[i,j] ~ dbern(phi[i,j])
+        }
+      }
+			
+      #  Observation
 			for(i in 1:n_obs){
-				 	mu1[ind[i], prim[i]] <- phi[ind[i], prim[i], sec[i]] * z[ind[i], prim[i]]
-					z[ind[i], prim[i]] ~ dbern(mu1[ind[i], prim[i]])
-						mu2[ind[i], prim[i], sec[i]] <- p[ind[i], prim[i], sec[i]] * z[ind[i], prim[i]]
-						y[ind[i]] ~ dbern(mu2[ind[i], prim[i], sec[i]])
+        mu2[ind[i], prim[i], sec[i]] <- p[ind[i], prim[i], sec[i]] *
+                                          z[ind[i], prim[i]]
+    		y[i] ~ dbern(mu2[ind[i], prim[i], sec[i]])
 			}		
+			
+			#  Derived
+			#  Survival given the number of toes clipped (0-7)
+			for(i in 1:8){
+        hold[i] <- mu_phi + beta1 * (i - 1)
+        pred_surv[i] <- 1/(1 + exp(-hold[i]))
+			}
+
 		}
