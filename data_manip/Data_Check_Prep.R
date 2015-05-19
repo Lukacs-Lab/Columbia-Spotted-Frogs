@@ -13,8 +13,8 @@ x <- read.csv("C:/frog/Frog.csv", as.is = T)
 frog <- tbl_df(x)
 
 # source Anna's code for extracting 
-anna <- "C:/Users/sara.williams/Documents/GitHub/Columbia-Spotted-Frogs/data_manip/extract_fun.R"
-source(anna)
+# anna <- "C:/Users/sara.williams/Documents/GitHub/Columbia-Spotted-Frogs/data_manip/extract_fun.R"
+# source(anna)
 
 #########################################################################
 
