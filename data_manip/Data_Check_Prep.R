@@ -117,19 +117,14 @@ ftoe <- inner_join(fwl, toe, by = "Index") %>%
 EH <- data.frame(extract_fun("_Sec", "eh")) 
 
 fEH <- inner_join(ftoe, EH, by = "Index") %>%
-            mutate(cap = eh.y) %>%
-            select(Index, cap, prim, sec, sc_wt, sc_len, toes, ratio)
+            mutate(cap = as.numeric(eh.y %in% c("J", "F", "M", "N", "S"))) %>%
+            select(Index, cap, prim, sec, sc_wt, sc_len, toes, ratio) %>%
+            group_by(Index) %>%
+            filter(cumsum(cap) >= 1) 
+            
+fEH <- as.data.frame(fEH)
 
-for (i in 1:nrow(fEH)){
-  
-  fEH$cap[i] <- ifelse(fEH$cap[i] == "J" | fEH$cap[i] == "F" | 
-                    fEH$cap[i] == "M" | fEH$cap[i] == "N" |
-                    fEH$cap[i] == "S" , 1, 0)
-
-}
-
-
-
+stopifnot(all(fEH$cap %in% c("0", "1")))
 
 return(fEH)
 # end get_data function
@@ -227,18 +222,17 @@ return(fEH)
   
   EH <- data.frame(extract_fun("_Sec", "eh")) 
   
+
   fEH <- inner_join(ftoe, EH, by = "Index") %>%
-    mutate(cap = eh.y) %>%
-    select(Index, cap, prim, sec, sc_wt, sc_len, toes, ratio)
+    mutate(cap = as.numeric(eh.y %in% c("J", "F", "M", "N", "S"))) %>%
+    select(Index, cap, prim, sec, sc_wt, sc_len, toes, ratio) %>%
+    group_by(Index) %>%
+    filter(cumsum(cap) >= 1) 
   
-  for (i in 1:nrow(fEH)){
     
-    fEH$cap[i] <- ifelse(fEH$cap[i] == "J" | fEH$cap[i] == "F" | 
-                           fEH$cap[i] == "M" | fEH$cap[i] == "N" |
-                           fEH$cap[i] == "S" , 1, 0)
-    
-  }
+  fEH <- as.data.frame(fEH)
   
+  stopifnot(all(fEH$cap %in% c("0", "1")))
   
   #############################################################################
   # sex of individuals that were juveniles at first capture
