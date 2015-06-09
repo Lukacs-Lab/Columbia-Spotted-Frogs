@@ -2,6 +2,8 @@
 		#  Lukacs Lab
 		#  05/18/2015
 #################################################################################
+		install.packages("mcmcplots")
+		library(mcmcplots)
 		#  Source prep scripts
 		source(file.path("C:/Users", 
 							Sys.info()["login"],
@@ -28,13 +30,13 @@
 		#  Scenario 1
 		parameters <- c("mean_phi", "mean_p", "p_star", "beta1", "pred_surv")
 		call_jags("toe_n_n_n_n_n",
-					parallel = T,
+					parallel = F,
 					ni = 10000,
 					nt = 1,
 					nb = 5000,
 					nc = 3,
 					debug_mode = F,
-					return_fit = F)		
+					return_fit = T)		
 					
 		#  Scenario 2
 		parameters <- c("mean_phi", "mean_p", "p_star", "beta1", "beta2", 
