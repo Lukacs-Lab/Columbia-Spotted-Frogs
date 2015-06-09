@@ -8,7 +8,7 @@
 		user <- Sys.info()["login"]
 ####################################################################################################
 		#   Parameters monitored  ---- MUST CHANGE THIS BY HAND FOR EACH MODEL
-#		parameters <- c("mean_phi", "mean_p", "p_star", "beta1", "beta2", "beta3", "beta4")
+		#		parameters <- c("mean_phi", "mean_p", "p_star", "beta1", "beta2", "beta3", "beta4")
 		
 		#  Source Anna's functions
 		source(file.path("C:/Users", user, 
@@ -37,6 +37,7 @@
 		}
 		n_obs <- nrow(fEH)
 	
+		first_occ <- tapply(fEH$prim, fEH$Index, min)
 		
 		toe <- tapply(as.numeric(fEH$toe), ind, unique)
 		weight <- tapply(as.numeric(fEH$sc_wt), ind, unique)
@@ -61,7 +62,8 @@
 						"toe", 
 						"weight", 
 						"length", 
-						"sex")
+						"sex",
+						"first_occ")
 
 							
 			
