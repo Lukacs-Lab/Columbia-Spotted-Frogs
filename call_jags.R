@@ -37,11 +37,11 @@
 		}
 		n_obs <- nrow(fEH)
 	
-		first_occ <- tapply(fEH$prim, fEH$Index, min)
+		first_occ <- as.numeric(tapply(prim, ind, min))
 		
-		toe <- tapply(as.numeric(fEH$toe), ind, unique)
-		weight <- tapply(as.numeric(fEH$sc_wt), ind, unique)
-		length <- tapply(as.numeric(fEH$sc_len), ind, unique)
+		toe <- as.numeric(tapply(as.numeric(fEH$toe), ind, unique))
+		weight <- as.numeric(tapply(as.numeric(fEH$sc_wt), ind, unique))
+		length <- as.numeric(tapply(as.numeric(fEH$sc_len), ind, unique))
 		# This is the correct way to get sex, but because there are fewer 
 		# individuals in this data it needs to be used to create all the data
 		# above too
@@ -124,10 +124,15 @@
 		# z
 		# }
 		
-		z.init <- function(){
+		z.init <- function(n_ind=n_ind, first_occ=first_occ, n_prim=n_prim){
 			z <- matrix(1, nrow = n_ind, ncol = n_prim)
+			for(i in 1:n_ind){
+				z[i, (1: (first_occ[i])-1)] <- NA
+			}
+			z
 		}
-		
+
+	
 		inits <- function(){
 			list("mu_phi" = runif(1, -1, 1),
 				 "mu_p" =   runif(1, -1, 1), 
@@ -135,7 +140,7 @@
 				 "beta2" =  runif(1, -5, 5),
 				 "beta3" =  runif(1, -5, 5),
 				 "beta4" =  runif(1, -5, 5),
-				 "z" =      z.init()) # Latent (true) state of individual i at time t
+				 "z" =  z.init(n_ind=n_ind, first_occ=first_occ, n_prim=n_prim)) # Latent (true) state of individual i at time t
 		}
 		
 		debug_inits <- function(){
@@ -145,7 +150,7 @@
 				 "beta2" =  runif(1, -5, 5),
 				 "beta3" =  runif(1, -5, 5),
 				 "beta4" =  runif(1, -5, 5),
-				 "z" =      z.init()[1:100,]) # Latent (true) state of individual i at time t
+				 "z" =  z.init(100, rep(1,100),14)) # Latent (true) state of individual i at time t
 		}
 				
 #################################################################################
@@ -173,10 +178,11 @@
 				data$weight <- weight[ind %in% 1:100]  
 				data$length <- length[ind %in% 1:100]  
 				data$sex <- sex[ind %in% 1:100] 
+				data$first_occ <- first_occ[ind %in% 1:100] 
 				print(names(data))
 				lapply(data, head)
 				
-				
+				print(head(debug_inits()))
 				
 				out <- try(jags(data = data, 
 							inits = debug_inits, 

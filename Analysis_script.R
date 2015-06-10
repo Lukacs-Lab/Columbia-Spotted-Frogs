@@ -2,8 +2,6 @@
 		#  Lukacs Lab
 		#  05/18/2015
 #################################################################################
-		install.packages("mcmcplots")
-		library(mcmcplots)
 		#  Source prep scripts
 		source(file.path("C:/Users", 
 							Sys.info()["login"],

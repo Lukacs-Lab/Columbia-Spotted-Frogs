@@ -20,6 +20,9 @@
 					mean_p[w, t] <- 1/(1 + (exp(-mu_p)))
 					temp[w, t] <- 1 - mean_p[w,t]
 				}
+				#for(q in (n_sec[w]+1):6){
+					#mean_p[w,q] <- 999
+					#}
 				p_star[w] <- 1 - prod(temp[w, 1:n_sec[w]])
 			}
 			
@@ -35,15 +38,14 @@
 
 			#  Likelihood
 			for(i in 1:n_ind){
-        for(j in first_occ[i]:n_prim){
-          z[i,j] ~ dbern(phi[i,j])
-        }
-      }
+				for(j in first_occ[i]:n_prim){
+					z[i,j] ~ dbern(phi[i,j])
+				}
+			}
 			
       #  Observation
 			for(i in 1:n_obs){
-        mu2[ind[i], prim[i], sec[i]] <- p[ind[i], prim[i], sec[i]] *
-                                          z[ind[i], prim[i]]
+        mu2[ind[i], prim[i], sec[i]] <- p[ind[i], prim[i], sec[i]] * z[ind[i], prim[i]]
     		y[i] ~ dbern(mu2[ind[i], prim[i], sec[i]])
 			}		
 			
