@@ -23,15 +23,15 @@
 					
 		#########  parameters to monitor not likely correct !!!!  ###############
 		#########  ni and nb too low given example runs  ########################
-		#########  call_jags does not handle data correctly for sex models  #####
+		#########  call_jags does not handle data correctly for sex models  ##### "mean_p"
 		
 		#  Scenario 1
 		parameters <- c("mean_phi", "mean_p", "p_star", "beta1", "pred_surv")
 		call_jags("toe_n_n_n_n_n",
 					parallel = F,
-					ni = 10000,
+					ni = 5000,
 					nt = 1,
-					nb = 5000,
+					nb = 1000,
 					nc = 3,
 					debug_mode = F,
 					return_fit = T)		
