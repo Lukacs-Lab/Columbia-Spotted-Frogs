@@ -25,34 +25,33 @@
 		#########  ni and nb too low given example runs  ########################
 		#########  call_jags does not handle data correctly for sex models  ##### "mean_p"
 		
-		#  Scenario 1
+		#  Scenario 1 - Toe only
 		parameters <- c("mean_phi", "mean_p", "p_star", "beta1", "pred_surv")
-		call_jags("toe_n_n_n_n_n",
+		fit <- call_jags("toe_n_n_n_n_n",
 					parallel = F,
-					ni = 5000,
+					ni = 15000,
 					nt = 1,
-					nb = 1000,
+					nb = 5000,
 					nc = 3,
 					debug_mode = F,
 					return_fit = T)		
 					
-		#  Scenario 2
-		parameters <- c("mean_phi", "mean_p", "p_star", "beta1", "beta2", 
-						"beta3")
-		call_jags("toe_n_length_sex_n_ls",
-					parallel = T,
-					ni = 10000,
+		#  Scenario 2 - Toe and length
+		parameters <- c("mean_phi", "mean_p", "p_star", "beta1", "beta2")
+		fit <- call_jags("toe_n_length_n_n_n",
+					parallel = F,
+					ni = 15000,
 					nt = 1,
 					nb = 5000,
 					nc = 3,
 					debug_mode = F,
 					return_fit = F)		
 					
-		#  Scenario 3
+		#  Scenario 3 - Toe and weight
 		parameters <- c("mean_phi", "mean_p", "p_star", "beta1", "beta2")
-		call_jags("toe_n_n_sex_n_n",
+		call_jags("toe_weight_n_n_n_n",
 					parallel = T,
-					ni = 10000,
+					ni = 15000,
 					nt = 1,
 					nb = 5000,
 					nc = 3,
