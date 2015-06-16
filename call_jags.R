@@ -43,11 +43,9 @@
 		toe <- as.numeric(scale(toe))
 	
 		weight <- as.numeric(tapply(as.numeric(fEH$sc_wt), ind, unique))
-		weight <- as.numeric(scale(weight))
-		
+				
 		length <- as.numeric(tapply(as.numeric(fEH$sc_len), ind, unique))
-		length <- as.numeric(scale(length))
-		
+				
 		# This is the correct way to get sex, but because there are fewer 
 		# individuals in this data it needs to be used to create all the data
 		# above too
@@ -112,7 +110,7 @@
 	
 		# Execute foo - function to create model name	
 		mod_name <- foo(weight = F, 
-						length = F, 
+						length = T, 
 						sex = F, 
 						intx1 = F, 
 						intx2 = F, 
