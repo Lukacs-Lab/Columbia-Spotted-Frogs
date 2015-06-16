@@ -7,9 +7,9 @@
 		model{
 			
 			#  Priors
-			mu_phi ~ dnorm(0, 0.001)T(-5, 5)
-			mu_p ~ dnorm(0, 0.001)T(-5, 5)
-			beta1 ~ dnorm(0, 0.001)T(-5, 5)
+			mu_phi ~ dnorm(0, 0.001)T(-3, 3)
+			mu_p ~ dnorm(0, 0.001)T(-3, 3)
+			beta1 ~ dnorm(0, 0.001)T(-3, 3)
 			
 			#  For monitoring
 			mean_phi <- 1/(1 + (exp(-mu_phi)))
@@ -20,9 +20,6 @@
 					mean_p[w, t] <- 1/(1 + (exp(-mu_p)))
 					temp[w, t] <- 1 - mean_p[w,t]
 				}
-				#for(q in (n_sec[w]+1):6){
-					#mean_p[w,q] <- 999
-					#}
 				p_star[w] <- 1 - prod(temp[w, 1:n_sec[w]])
 			}
 			

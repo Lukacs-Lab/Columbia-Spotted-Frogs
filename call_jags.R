@@ -7,16 +7,15 @@
 		setwd("C:/frog")
 		user <- Sys.info()["login"]
 ####################################################################################################
-		#   Parameters monitored  ---- MUST CHANGE THIS BY HAND FOR EACH MODEL
-		#		parameters <- c("mean_phi", "mean_p", "p_star", "beta1", "beta2", "beta3", "beta4")
-		
+
 		#  Source Anna's functions
 		source(file.path("C:/Users", user, 
 				"Documents/GitHub/Columbia-Spotted-Frogs/data_manip/extract_fun.R"))
 		
 		#  Source and run Charlie's function and define objects
-		source(file.path("C:/Users", user, 
-				"Documents/GitHub/Columbia-Spotted-Frogs/data_manip/Data_Check_Prep.R"))
+		source(file.path("C:/Users", 
+							Sys.info()["login"],
+						"Documents/GitHub/Columbia-Spotted-Frogs/data_manip/Data_Check_Prep.R"))
 				
 		fEH <- get_data()
 		fsex <- get_sex_data() 
@@ -40,6 +39,7 @@
 		first_occ <- as.numeric(tapply(prim, ind, min))
 		
 		toe <- as.numeric(tapply(as.numeric(fEH$toe), ind, unique))
+		toe <- scale(toe)
 		weight <- as.numeric(tapply(as.numeric(fEH$sc_wt), ind, unique))
 		length <- as.numeric(tapply(as.numeric(fEH$sc_len), ind, unique))
 		# This is the correct way to get sex, but because there are fewer 
@@ -106,7 +106,7 @@
 	
 		# Execute foo - function to create model name	
 		mod_name <- foo(weight = F, 
-						length = F, 
+						length = T, 
 						sex = F, 
 						intx1 = F, 
 						intx2 = F, 
