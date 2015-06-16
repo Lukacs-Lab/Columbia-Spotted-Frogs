@@ -26,7 +26,7 @@
 		#########  call_jags does not handle data correctly for sex models  ######### 
 		######### "mean_p" not estimable in current form of model script ###########
 		#  Scenario 0 - Null
-		parameters <- c("mean_phi", "mu_p", "p_star", "pred_surv")
+		parameters <- c("mean_phi", "p_star", "pred_surv")
 		fit <- call_jags("n_n_n_n_n_n",
 					parallel = F,
 					ni = 5000,
@@ -38,7 +38,7 @@
 		
 		
 		#  Scenario 1 - Toe only
-		parameters <- c("mean_phi", "mu_p", "p_star", "beta1", "pred_surv")
+		parameters <- c("mean_phi",  "p_star", "beta1", "pred_surv")
 		fit <- call_jags("toe_n_n_n_n_n",
 					parallel = F,
 					ni = 5000,
