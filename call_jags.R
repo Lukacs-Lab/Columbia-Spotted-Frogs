@@ -15,8 +15,9 @@
 				"Documents/GitHub/Columbia-Spotted-Frogs/data_manip/extract_fun.R"))
 		
 		#  Source and run Charlie's function and define objects
-		source(file.path("C:/Users", user, 
-				"Documents/GitHub/Columbia-Spotted-Frogs/data_manip/Data_Check_Prep.R"))
+		source(file.path("C:/Users", 
+							Sys.info()["login"],
+						"Documents/GitHub/Columbia-Spotted-Frogs/data_manip/Data_Check_Prep.R"))
 				
 		fEH <- get_data()
 		fsex <- get_sex_data() 
@@ -40,6 +41,7 @@
 		first_occ <- as.numeric(tapply(prim, ind, min))
 		
 		toe <- as.numeric(tapply(as.numeric(fEH$toe), ind, unique))
+		toe <- scale(toe)
 		weight <- as.numeric(tapply(as.numeric(fEH$sc_wt), ind, unique))
 		length <- as.numeric(tapply(as.numeric(fEH$sc_len), ind, unique))
 		# This is the correct way to get sex, but because there are fewer 

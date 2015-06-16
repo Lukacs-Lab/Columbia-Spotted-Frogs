@@ -9,7 +9,7 @@
 #################################################################################
 		#  Call models
 		#  Example debug call
-		parameters <- c("mean_phi", "mean_p", "p_star", "beta1", "pred_surv")
+		parameters <- c("mean_phi", "mu_p", "p_star", "beta1", "pred_surv")
 		fit <- call_jags("toe_n_n_n_n_n",
 					parallel = F,
 					ni = 5000,
@@ -26,12 +26,12 @@
 		#########  call_jags does not handle data correctly for sex models  ##### "mean_p"
 		
 		#  Scenario 1 - Toe only
-		parameters <- c("mean_phi", "mean_p", "p_star", "beta1", "pred_surv")
+		parameters <- c("mean_phi", "mu_p", "p_star", "beta1", "pred_surv")
 		fit <- call_jags("toe_n_n_n_n_n",
 					parallel = F,
-					ni = 15000,
+					ni = 5000,
 					nt = 1,
-					nb = 5000,
+					nb = 1000,
 					nc = 3,
 					debug_mode = F,
 					return_fit = T)		
@@ -40,12 +40,12 @@
 		parameters <- c("mean_phi", "mean_p", "p_star", "beta1", "beta2")
 		fit <- call_jags("toe_n_length_n_n_n",
 					parallel = F,
-					ni = 15000,
+					ni = 25000,
 					nt = 1,
 					nb = 5000,
 					nc = 3,
 					debug_mode = F,
-					return_fit = F)		
+					return_fit = T)		
 					
 		#  Scenario 3 - Toe and weight
 		parameters <- c("mean_phi", "mean_p", "p_star", "beta1", "beta2")
