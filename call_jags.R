@@ -7,9 +7,7 @@
 		setwd("C:/frog")
 		user <- Sys.info()["login"]
 ####################################################################################################
-		#   Parameters monitored  ---- MUST CHANGE THIS BY HAND FOR EACH MODEL
-		#		parameters <- c("mean_phi", "mean_p", "p_star", "beta1", "beta2", "beta3", "beta4")
-		
+
 		#  Source Anna's functions
 		source(file.path("C:/Users", user, 
 				"Documents/GitHub/Columbia-Spotted-Frogs/data_manip/extract_fun.R"))
