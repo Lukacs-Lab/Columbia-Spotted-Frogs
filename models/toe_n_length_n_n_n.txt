@@ -3,7 +3,7 @@
 		#  Lukacs Lab
 ####################################################################################################
 	
-		#  Define model - Toe covariate 
+		#  Define model - Toe covariate and length covariates
 		model{
 			
 			#  Priors
@@ -21,10 +21,7 @@
 					mean_p[w, t] <- 1/(1 + (exp(-mu_p)))
 					temp[w, t] <- 1 - mean_p[w,t]
 				}
-				#for(q in (n_sec[w]+1):6){
-					#mean_p[w,q] <- 999
-					#}
-				p_star[w] <- 1 - prod(temp[w, 1:n_sec[w]])
+					p_star[w] <- 1 - prod(temp[w, 1:n_sec[w]])
 			}
 			
 			#  Linear predictor
@@ -53,7 +50,7 @@
 			#  Derived
 			#  Survival given the number of toes clipped (0-7)
 			for(i in 1:8){
-        hold[i] <- mu_phi + beta1 * (i - 1)
+        hold[i] <- mu_phi + beta1 * (i - 1) 
         pred_surv[i] <- 1/(1 + exp(-hold[i]))
 			}
 

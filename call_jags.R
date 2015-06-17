@@ -9,7 +9,8 @@
 ####################################################################################################
 
 		#  Source Anna's functions
-		source(file.path("C:/Users", user, 
+		source(file.path("C:/Users", 
+							Sys.info()["login"],
 				"Documents/GitHub/Columbia-Spotted-Frogs/data_manip/extract_fun.R"))
 		
 		#  Source and run Charlie's function and define objects
@@ -39,9 +40,12 @@
 		first_occ <- as.numeric(tapply(prim, ind, min))
 		
 		toe <- as.numeric(tapply(as.numeric(fEH$toe), ind, unique))
-		toe <- scale(toe)
+		toe <- as.numeric(scale(toe))
+	
 		weight <- as.numeric(tapply(as.numeric(fEH$sc_wt), ind, unique))
+				
 		length <- as.numeric(tapply(as.numeric(fEH$sc_len), ind, unique))
+				
 		# This is the correct way to get sex, but because there are fewer 
 		# individuals in this data it needs to be used to create all the data
 		# above too
@@ -105,6 +109,7 @@
 		}
 	
 		# Execute foo - function to create model name	
+
 		mod_name <- foo(weight = F, 
 						length = F, 
 						sex = F, 
