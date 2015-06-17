@@ -10,7 +10,7 @@
 
 		#  Source Anna's functions
 		source(file.path("C:/Users", 
-							Sys.info()["login"] 
+							Sys.info()["login"],
 				"Documents/GitHub/Columbia-Spotted-Frogs/data_manip/extract_fun.R"))
 		
 		#  Source and run Charlie's function and define objects
@@ -109,8 +109,8 @@
 		}
 	
 		# Execute foo - function to create model name	
-		mod_name <- foo(weight = F, 
-						length = T, 
+		mod_name <- foo(weight = T, 
+						length = F, 
 						sex = F, 
 						intx1 = F, 
 						intx2 = F, 
