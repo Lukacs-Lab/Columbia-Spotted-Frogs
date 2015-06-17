@@ -38,7 +38,7 @@
 		
 		
 		#  Scenario 1 - Toe only
-		parameters <- c("mean_phi",  "p_star", "beta1", "pred_surv")
+		parameters <- c("mean_phi", "p_star", "beta1", "pred_surv")
 		fit <- call_jags("toe_n_n_n_n_n",
 					parallel = F,
 					ni = 5000,
