@@ -41,9 +41,7 @@
 		
 		toe <- as.numeric(tapply(as.numeric(fEH$toe), ind, unique))
 		toe <- as.numeric(scale(toe))
-	
 		weight <- as.numeric(tapply(as.numeric(fEH$sc_wt), ind, unique))
-				
 		length <- as.numeric(tapply(as.numeric(fEH$sc_len), ind, unique))
 				
 		############# Data selection for all covariates when using sex ############################

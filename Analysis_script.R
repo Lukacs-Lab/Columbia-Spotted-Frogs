@@ -84,7 +84,7 @@
 					return_fit = T)		
 					
 		#  Scenario 5 - Toe, sex and length
-		parameters <- c("mean_phi", "p_star", "beta1", "beta2", "pred_surv")
+		parameters <- c("mean_phi", "p_star", "beta1", "beta2", "beta3", "pred_surv")
 		fit <- call_jags("toe_n_length_sex_n_n",
 					parallel = F,
 					ni = 5000,
@@ -95,7 +95,7 @@
 					return_fit = T)		
 					
 		#  Scenario 6 - Toe, sex and weight
-		parameters <- c("mean_phi", "p_star", "beta1", "beta2", "pred_surv")
+		parameters <- c("mean_phi", "p_star", "beta1", "beta2", "beta3", "pred_surv")
 		fit <- call_jags("toe_weight_n_sex_n_n",
 					parallel = F,
 					ni = 5000,
@@ -106,7 +106,7 @@
 					return_fit = T)		
 					
 		#  Scenario 7 - Toe, sex, length and interaction length*sex
-		parameters <- c("mean_phi", "p_star", "beta1", "beta2", "pred_surv")
+		parameters <- c("mean_phi", "p_star", "beta1", "beta2", "beta3", "beta4", "pred_surv")
 		fit <- call_jags("toe_n_length_sex_n_ls",
 					parallel = F,
 					ni = 5000,
@@ -117,7 +117,7 @@
 					return_fit = T)		
 					
 		#  Scenario 8 - Toe, sex, weight and interaction weight*sex
-		parameters <- c("mean_phi", "p_star", "beta1", "beta2", "pred_surv")
+		parameters <- c("mean_phi", "p_star", "beta1", "beta2", "beta3", "beta4", "pred_surv")
 		fit <- call_jags("toe_weight_n_sex_ws_n",
 					parallel = F,
 					ni = 5000,

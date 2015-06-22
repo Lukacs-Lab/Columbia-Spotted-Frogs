@@ -29,7 +29,7 @@
 			#  Linear predictor
 			for(i in 1:n_ind){
         for(j in 1:n_prim){
-       	  logit(phi[i, j]) <- mu_phi + beta1 * toe[i] + beta2 * length[i] + beta3 * sex[i] + beta4 * length[i]*sex[i]
+       	  logit(phi[i, j]) <- mu_phi + beta1 * toe[i] + beta2 * length[i] + beta3 * sex[i] + beta4 * length[i] * sex[i]
        	  for(k in 1:n_sec[j]){
             logit(p[i, j, k]) <- mu_p
           }
