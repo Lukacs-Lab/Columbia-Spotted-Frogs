@@ -46,10 +46,12 @@
 				
 		length <- as.numeric(tapply(as.numeric(fEH$sc_len), ind, unique))
 				
-		############# Data for all covariates when using sex ############################
-		# This is the correct way to get sex, but because there are fewer 
-		# individuals in this data it needs to be used to create all the data
-		# above too
+		############# Data selection for all covariates when using sex ############################
+		
+		#  There are fewer that have sex recorded than in the total data set. So, we have to recreate all
+		#   the data and covariate vectors with this smaller subset of data, and it has to be taken for
+		#   the correct individuals (i.e., not just the first 463 individuals, but the 463 that also have
+		#   sex recorded)
 		sex_num <- tapply(fsex$Sex, as.numeric(as.factor(fsex$Index)), function(x){
 				ifelse(unique(x) == "M", 0, 1)
 		})
@@ -64,8 +66,24 @@
 		sex_dat <- inner_join(fsex, temp, by = "Index")
 		sex_dat <- select(sex_dat, -sex_info)
 		
+		
+		y <- as.numeric(sex_dat$cap)	
 		ind<- as.factor(sex_dat$Index)
 		ind <- as.numeric(ind)
+		prim <- as.factor(sex_dat$prim)
+		prim <- as.numeric(prim)
+		sec <- as.factor(sex_dat$sec)
+		sec <- as.numeric(sec)
+	
+		n_obs <- nrow(sex_dat)
+		n_ind <- length(unique(sex_dat$Index))
+		n_prim <- length(unique(prim))
+		n_sec <- rep(NA,n_prim)	
+		for(i in 1:n_prim){
+			n_sec[i] <- length(unique(sec[prim == i]))
+		}
+		
+		first_occ <- as.numeric(tapply(prim, ind, min))
 		
 		sex <- as.numeric(tapply(as.numeric(sex_dat$sex_num), ind, unique))
 		toe <- as.numeric(tapply(as.numeric(sex_dat$toes), ind, unique))
@@ -133,8 +151,8 @@
 		# Execute foo - function to create model name	
 
 		mod_name <- foo(weight = F, 
-						length = T, 
-						sex = F, 
+						length = F, 
+						sex = T, 
 						intx1 = F, 
 						intx2 = F, 
 						name = T)

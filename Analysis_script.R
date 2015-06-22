@@ -49,7 +49,7 @@
 					return_fit = T)		
 					
 		#  Scenario 2 - Toe and length
-		parameters <- c("mean_phi", "p_star", "beta1", "beta2")
+		parameters <- c("mean_phi", "p_star", "beta1", "beta2", "pred_surv")
 		fit <- call_jags("toe_n_length_n_n_n",
 					parallel = F,
 					ni = 30000,
@@ -60,7 +60,7 @@
 					return_fit = T)		
 					
 		#  Scenario 3 - Toe and weight
-		parameters <- c("mean_phi", "p_star", "beta1", "beta2")
+		parameters <- c("mean_phi", "p_star", "beta1", "beta2", "pred_surv")
 		fit <- call_jags("toe_weight_n_n_n_n",
 					parallel = F,
 					ni = 30000,
@@ -70,4 +70,13 @@
 					debug_mode = F,
 					return_fit = T)		
 					
-		#  Scenario .....
+		#  Scenario 4 - Toe and sex
+		parameters <- c("mean_phi", "p_star", "beta1", "beta2", "pred_surv")
+		fit <- call_jags("toe_n_n_sex_n_n",
+					parallel = F,
+					ni = 5000,
+					nt = 1,
+					nb = 1000,
+					nc = 3,
+					debug_mode = F,
+					return_fit = T)		
