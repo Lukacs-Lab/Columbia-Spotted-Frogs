@@ -46,13 +46,35 @@
 				
 		length <- as.numeric(tapply(as.numeric(fEH$sc_len), ind, unique))
 				
+		############# Data for all covariates when using sex ############################
 		# This is the correct way to get sex, but because there are fewer 
 		# individuals in this data it needs to be used to create all the data
 		# above too
-		sex <- tapply(fsex$Sex, as.numeric(as.factor(fsex$Index)), function(x){
+		sex_num <- tapply(fsex$Sex, as.numeric(as.factor(fsex$Index)), function(x){
 				ifelse(unique(x) == "M", 0, 1)
 		})
+		sex_num <- as.data.frame(sex_num)
+		
+		sex_index <- fsex %>%  
+							group_by(Index) %>% 
+							summarise(sex_info = any(!is.na(Sex)))	
+							
+		temp <- bind_cols(sex_index, sex_num)
+		
+		sex_dat <- inner_join(fsex, temp, by = "Index")
+		sex_dat <- select(sex_dat, -sex_info)
+		
+		ind<- as.factor(sex_dat$Index)
+		ind <- as.numeric(ind)
+		
+		sex <- as.numeric(tapply(as.numeric(sex_dat$sex_num), ind, unique))
+		toe <- as.numeric(tapply(as.numeric(sex_dat$toes), ind, unique))
+		toe <- as.numeric(scale(toe))
+		length <- as.numeric(tapply(as.numeric(sex_dat$sc_len), ind, unique))
+		weight <- as.numeric(tapply(as.numeric(sex_dat$sc_wt), ind, unique))
 
+		
+	
 		
 		# Bundle data
 		data <- list("y", 
