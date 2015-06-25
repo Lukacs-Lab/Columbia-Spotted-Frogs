@@ -19,7 +19,6 @@
 						"Documents/GitHub/Columbia-Spotted-Frogs/data_manip/Data_Check_Prep.R"))
 				
 		fEH <- get_data()
-		fsex <- get_sex_data() 
 		
 		y <- as.numeric(fEH$cap)	
 		ind <- as.factor(fEH$Index)
@@ -50,6 +49,8 @@
 		#   the data and covariate vectors with this smaller subset of data, and it has to be taken for
 		#   the correct individuals (i.e., not just the first 463 individuals, but the 463 that also have
 		#   sex recorded)
+		fsex <- get_sex_data() 
+		
 		sex_index <- fsex %>%
                 group_by(Index) %>%               
 				filter(!is.na(Index)) %>%
@@ -164,9 +165,9 @@
 	
 		# Execute foo - function to create model name	
 
-		mod_name <- foo(weight = F, 
+		mod_name <- foo(weight = T, 
 						length = F, 
-						sex = T, 
+						sex = F, 
 						intx1 = F, 
 						intx2 = F, 
 						name = T)

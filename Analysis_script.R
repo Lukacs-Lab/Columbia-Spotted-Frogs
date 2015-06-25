@@ -21,7 +21,6 @@
 					
 		mcmcplot(fit)
 					
-
 		######### "mean_p" not estimable in current form of model script ###########
 		#  Scenario 0 - Null
 		parameters <- c("mean_phi", "p_star", "pred_surv")
@@ -66,6 +65,8 @@
 					nc = 3,
 					debug_mode = F,
 					return_fit = T)		
+		fit
+		mcmcplot(fit)
 		
 		#######  For the following scenarios (with sex covariate), you must use data  ##########
 		#######   subsetted just the individuals for which sex is recorded   ###################
