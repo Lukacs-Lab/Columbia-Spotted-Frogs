@@ -47,12 +47,8 @@
     		y[i] ~ dbern(mu2[ind[i], prim[i], sec[i]])
 			}		
 			
-			#  Derived
-			#  Survival given the number of toes clipped (0-7)
-			for(i in 1:8){
-        hold[i] <- mu_phi + beta1 * (i - 1) 
-        pred_surv[i] <- 1/(1 + exp(-hold[i]))
-			}
-
+			#  Derived mean survival with all covariates held at their mean (which is 0 because covariates are centered and scaled)
+			hold[i] <- mu_phi 
+			pred_surv[i] <- 1/(1 + exp(-hold[i]))
+			
 		}	
-	
