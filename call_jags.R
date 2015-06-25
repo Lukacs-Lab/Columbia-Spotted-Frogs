@@ -63,9 +63,9 @@
                             toe = unique(toes),
                             length = unique(sc_len),
                             weight = unique(sc_wt))
- 
-		
-		
+
+
+
 		y <- as.numeric(fsex$cap)	
 		ind <- as.factor(fsex$Index)
 		ind <- as.numeric(ind)
@@ -170,6 +170,7 @@
 						intx1 = F, 
 						intx2 = F, 
 						name = T)
+		mod_name
 		
 		#Initial values 
 		#Function to create a matrix of initial vales for latent state z

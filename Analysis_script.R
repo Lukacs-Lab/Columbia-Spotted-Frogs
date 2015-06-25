@@ -21,9 +21,7 @@
 					
 		mcmcplot(fit)
 					
-		#########  parameters to monitor not likely correct !!!!  ####################
-		#########  ni and nb too low given example runs  ########################
-		#########  call_jags does not handle data correctly for sex models  ######### 
+
 		######### "mean_p" not estimable in current form of model script ###########
 		#  Scenario 0 - Null
 		parameters <- c("mean_phi", "p_star", "pred_surv")
@@ -35,7 +33,6 @@
 					nc = 3,
 					debug_mode = F,
 					return_fit = T)		
-		
 		
 		#  Scenario 1 - Toe only
 		parameters <- c("mean_phi", "p_star", "beta1", "pred_surv")
