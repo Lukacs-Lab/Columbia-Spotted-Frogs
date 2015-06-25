@@ -50,31 +50,32 @@
 		#   the data and covariate vectors with this smaller subset of data, and it has to be taken for
 		#   the correct individuals (i.e., not just the first 463 individuals, but the 463 that also have
 		#   sex recorded)
-		sex_num <- tapply(fsex$Sex, as.numeric(as.factor(fsex$Index)), function(x){
-				ifelse(unique(x) == "M", 0, 1)
-		})
-		sex_num <- as.data.frame(sex_num)
-		
-		sex_index <- fsex %>%  
-							group_by(Index) %>% 
-							summarise(sex_info = any(!is.na(Sex)))	
-							
-		temp <- bind_cols(sex_index, sex_num)
-		
-		sex_dat <- inner_join(fsex, temp, by = "Index")
-		sex_dat <- select(sex_dat, -sex_info)
-		
-		
-		y <- as.numeric(sex_dat$cap)	
-		ind<- as.factor(sex_dat$Index)
+		sex_index <- fsex %>%
+                group_by(Index) %>%               
+				filter(!is.na(Index)) %>%
+                mutate(sex_num = ifelse(as.character(Sex) == "F", 1, 0))
+								
+				
+		sex_dat <- ungroup(sex_index) %>%
+				mutate(toes = as.numeric(scale(toes))) %>%
+	            group_by(Index) %>%
+                summarise(sex = unique(sex_num),
+                            toe = unique(toes),
+                            length = unique(sc_len),
+                            weight = unique(sc_wt))
+
+
+
+		y <- as.numeric(fsex$cap)	
+		ind <- as.factor(fsex$Index)
 		ind <- as.numeric(ind)
-		prim <- as.factor(sex_dat$prim)
+		prim <- as.factor(fsex$prim)
 		prim <- as.numeric(prim)
-		sec <- as.factor(sex_dat$sec)
+		sec <- as.factor(fsex$sec)
 		sec <- as.numeric(sec)
 	
-		n_obs <- nrow(sex_dat)
-		n_ind <- length(unique(sex_dat$Index))
+		n_obs <- nrow(fsex)
+		n_ind <- length(unique(fsex$Index))
 		n_prim <- length(unique(prim))
 		n_sec <- rep(NA,n_prim)	
 		for(i in 1:n_prim){
@@ -83,13 +84,28 @@
 		
 		first_occ <- as.numeric(tapply(prim, ind, min))
 		
-		sex <- as.numeric(tapply(as.numeric(sex_dat$sex_num), ind, unique))
-		toe <- as.numeric(tapply(as.numeric(sex_dat$toes), ind, unique))
-		toe <- as.numeric(scale(toe))
-		length <- as.numeric(tapply(as.numeric(sex_dat$sc_len), ind, unique))
-		weight <- as.numeric(tapply(as.numeric(sex_dat$sc_wt), ind, unique))
-
+				
 		
+		# sex_num <- tapply(fsex$Sex, as.numeric(as.factor(fsex$Index)), function(x){
+		# ifelse(unique(x) == "M", 0, 1)
+		# })
+		# sex_num <- as.data.frame(sex_num)
+		
+		# sex_index <- fsex %>%  
+							# group_by(Index) %>% 
+							# summarise(sex_info = any(!is.na(Sex)))	
+							
+		# temp <- bind_cols(sex_index, sex_num)
+		
+		# sex_dat <- inner_join(fsex, temp, by = "Index")
+		# sex_dat <- select(sex_dat, -sex_info)
+		
+		
+		# sex <- as.numeric(tapply(as.numeric(sex_dat$sex_num), ind, unique))
+		# toe <- as.numeric(tapply(as.numeric(sex_dat$toes), ind, unique))
+		# toe <- as.numeric(scale(toe))
+		# length <- as.numeric(tapply(as.numeric(sex_dat$sc_len), ind, unique))
+		# weight <- as.numeric(tapply(as.numeric(sex_dat$sc_wt), ind, unique))
 	
 		
 		# Bundle data
@@ -154,6 +170,7 @@
 						intx1 = F, 
 						intx2 = F, 
 						name = T)
+		mod_name
 		
 		#Initial values 
 		#Function to create a matrix of initial vales for latent state z

@@ -21,9 +21,7 @@
 					
 		mcmcplot(fit)
 					
-		#########  parameters to monitor not likely correct !!!!  ####################
-		#########  ni and nb too low given example runs  ########################
-		#########  call_jags does not handle data correctly for sex models  ######### 
+
 		######### "mean_p" not estimable in current form of model script ###########
 		#  Scenario 0 - Null
 		parameters <- c("mean_phi", "p_star", "pred_surv")
@@ -35,7 +33,6 @@
 					nc = 3,
 					debug_mode = F,
 					return_fit = T)		
-		
 		
 		#  Scenario 1 - Toe only
 		parameters <- c("mean_phi", "p_star", "beta1", "pred_surv")
@@ -76,9 +73,9 @@
 		parameters <- c("mean_phi", "p_star", "beta1", "beta2", "pred_surv")
 		fit <- call_jags("toe_n_n_sex_n_n",
 					parallel = F,
-					ni = 5000,
-					nt = 1,
-					nb = 1000,
+					ni = 30000,
+					nt = 2,
+					nb = 15000,
 					nc = 3,
 					debug_mode = F,
 					return_fit = T)		
@@ -87,9 +84,9 @@
 		parameters <- c("mean_phi", "p_star", "beta1", "beta2", "beta3", "pred_surv")
 		fit <- call_jags("toe_n_length_sex_n_n",
 					parallel = F,
-					ni = 5000,
-					nt = 1,
-					nb = 1000,
+					ni = 30000,
+					nt = 2,
+					nb = 15000,
 					nc = 3,
 					debug_mode = F,
 					return_fit = T)		
@@ -98,9 +95,9 @@
 		parameters <- c("mean_phi", "p_star", "beta1", "beta2", "beta3", "pred_surv")
 		fit <- call_jags("toe_weight_n_sex_n_n",
 					parallel = F,
-					ni = 5000,
-					nt = 1,
-					nb = 1000,
+					ni = 30000,
+					nt = 2,
+					nb = 15000,
 					nc = 3,
 					debug_mode = F,
 					return_fit = T)		
@@ -109,9 +106,9 @@
 		parameters <- c("mean_phi", "p_star", "beta1", "beta2", "beta3", "beta4", "pred_surv")
 		fit <- call_jags("toe_n_length_sex_n_ls",
 					parallel = F,
-					ni = 5000,
-					nt = 1,
-					nb = 1000,
+					ni = 30000,
+					nt = 12,
+					nb = 15000,
 					nc = 3,
 					debug_mode = F,
 					return_fit = T)		
@@ -120,9 +117,9 @@
 		parameters <- c("mean_phi", "p_star", "beta1", "beta2", "beta3", "beta4", "pred_surv")
 		fit <- call_jags("toe_weight_n_sex_ws_n",
 					parallel = F,
-					ni = 5000,
-					nt = 1,
-					nb = 1000,
+					ni = 30000,
+					nt = 2,
+					nb = 15000,
 					nc = 3,
 					debug_mode = F,
 					return_fit = T)		
