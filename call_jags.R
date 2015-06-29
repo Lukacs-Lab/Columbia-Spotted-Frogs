@@ -165,7 +165,7 @@
 	
 		# Execute foo - function to create model name	
 
-		mod_name <- foo(weight = T, 
+		mod_name <- foo(weight = F, 
 						length = F, 
 						sex = F, 
 						intx1 = F, 

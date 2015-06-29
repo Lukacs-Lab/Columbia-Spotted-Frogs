@@ -26,9 +26,9 @@
 		parameters <- c("mean_phi", "p_star", "pred_surv")
 		fit <- call_jags("n_n_n_n_n_n",
 					parallel = F,
-					ni = 5000,
-					nt = 1,
-					nb = 1000,
+					ni = 30000,
+					nt = 2,
+					nb = 15000,
 					nc = 3,
 					debug_mode = F,
 					return_fit = T)		
