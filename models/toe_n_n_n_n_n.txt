@@ -47,7 +47,6 @@
 			}		
 			
 			#  Derived mean survival with all covariates held at their mean (which is 0 because covariates are centered and scaled)
-			hold[i] <- mu_phi 
-			pred_surv[i] <- 1/(1 + exp(-hold[i]))
+			pred_surv <- 1/(1 + exp(-mu_phi))
 
 		}
