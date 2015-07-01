@@ -38,13 +38,15 @@
 	
 		first_occ <- as.numeric(tapply(prim, ind, min))
 		
-		toe <- as.numeric(tapply(as.numeric(fEH$toe), ind, unique))
+		toe <- as.numeric(tapply(as.numeric(fEH$toes), ind, unique))
 		toe <- as.numeric(scale(toe))
 		weight <- as.numeric(tapply(as.numeric(fEH$sc_wt), ind, unique))
+		weight <- as.numeric(scale(weight))
 		length <- as.numeric(tapply(as.numeric(fEH$sc_len), ind, unique))
+		length <- as.numeric(scale(length))
 				
 		############# Data selection for all covariates when using sex ############################
-		
+		############# Only use this if running models with sex covariate ##########################
 		#  There are fewer that have sex recorded than in the total data set. So, we have to recreate all
 		#   the data and covariate vectors with this smaller subset of data, and it has to be taken for
 		#   the correct individuals (i.e., not just the first 463 individuals, but the 463 that also have
@@ -121,7 +123,7 @@
 						"toe", 
 						"weight", 
 						"length", 
-						"sex",
+						#"sex",
 						"first_occ")
 
 							
@@ -166,7 +168,7 @@
 		# Execute foo - function to create model name	
 
 		mod_name <- foo(weight = F, 
-						length = F, 
+						length = T, 
 						sex = F, 
 						intx1 = F, 
 						intx2 = F, 

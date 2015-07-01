@@ -55,6 +55,7 @@ fcap <- inner_join(first, age, by = "Index") %>%
 
 ##############################################################################
 # extract weight at first capture data
+#  Edit 6-30-15 SW: scaling of weight now done in the call_jags script
 #############################################################################
 
 wt <- data.frame(extract_fun("Weight", "wt")) %>%
@@ -64,11 +65,12 @@ fwt <- inner_join(fcap, wt, by = "Index") %>%
           filter(Prim.Sec.First.Marked == fm2 & !is.na(wt)) %>%
           # change weight filter here
           filter( wt >= 0.5 & wt <= 7) %>%
-          mutate(sc_wt = as.numeric(scale(wt, center = T, scale = T))) %>%
+          mutate(sc_wt = as.numeric(wt)) %>%
           select(Index, eh, fm, wt, sc_wt)
 
 ##############################################################################
 # extract length at first capture data
+#  Edit 6-30-15 SW: scaling of length now done in the call_jags script
 #############################################################################
 
 svl <- data.frame(extract_fun("SVL", "length")) %>%
@@ -79,7 +81,7 @@ fsvl <- inner_join(fcap, svl, by = "Index") %>%
           mutate(length = as.numeric(length)) %>%
           # change length filter here
           filter( length >= 20 & length <= 38) %>%
-          mutate(sc_len = as.numeric(scale(length, center = T, scale = T))) %>%
+          mutate(sc_len = as.numeric(length)) %>%
           select(Index, eh, fm, length, sc_len)
 
 
@@ -161,6 +163,7 @@ return(fEH)
   
   ##############################################################################
   # extract weight at first capture data
+  #  Edit 6-30-15 SW: scaling of weight now done in the call_jags script
   #############################################################################
   
   wt <- data.frame(extract_fun("Weight", "wt")) %>%
@@ -170,11 +173,12 @@ return(fEH)
     filter(Prim.Sec.First.Marked == fm2 & !is.na(wt)) %>%
     # change weight filter here
     filter( wt >= 0.5 & wt <= 7) %>%
-    mutate(sc_wt = as.numeric(scale(wt, center = T, scale = T))) %>%
+    mutate(sc_wt = as.numeric(wt)) %>%
     select(Index, eh, fm, wt, sc_wt)
   
   ##############################################################################
   # extract length at first capture data
+  #  Edit 6-30-15 SW: scaling of length now done in the call_jags script
   #############################################################################
   
   svl <- data.frame(extract_fun("SVL", "length")) %>%
@@ -185,7 +189,7 @@ return(fEH)
     mutate(length = as.numeric(length)) %>%
     # change length filter here
     filter( length >= 20 & length <= 38) %>%
-    mutate(sc_len = as.numeric(scale(length, center = T, scale = T))) %>%
+    mutate(sc_len = as.numeric(length)) %>%
     select(Index, eh, fm, length, sc_len)
   
   
