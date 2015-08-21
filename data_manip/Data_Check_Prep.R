@@ -13,8 +13,8 @@ x <- read.csv("C:/frog/Frog.csv", as.is = T)
 frog <- tbl_df(x)
 
 # source Anna's code for extracting 
-anna <- "C:/Users/charles.henderson/Documents/GitHub/Columbia-Spotted-Frogs/data_manip/extract_fun.R"
-source(anna)
+# anna <- "C:/Users/sara.williams/Documents/GitHub/Columbia-Spotted-Frogs/data_manip/extract_fun.R"
+# source(anna)
 
 #########################################################################
 
@@ -27,7 +27,7 @@ source(anna)
 # 
 
 # look at list
-lapply(xobs, head)
+# lapply(xobs, head)
 
 get_data <- function(){
 
@@ -55,6 +55,7 @@ fcap <- inner_join(first, age, by = "Index") %>%
 
 ##############################################################################
 # extract weight at first capture data
+#  Edit 6-30-15 SW: scaling of weight now done in the call_jags script
 #############################################################################
 
 wt <- data.frame(extract_fun("Weight", "wt")) %>%
@@ -64,11 +65,12 @@ fwt <- inner_join(fcap, wt, by = "Index") %>%
           filter(Prim.Sec.First.Marked == fm2 & !is.na(wt)) %>%
           # change weight filter here
           filter( wt >= 0.5 & wt <= 7) %>%
-          mutate(sc_wt = as.numeric(scale(wt, center = T, scale = T))) %>%
+          mutate(sc_wt = as.numeric(wt)) %>%
           select(Index, eh, fm, wt, sc_wt)
 
 ##############################################################################
 # extract length at first capture data
+#  Edit 6-30-15 SW: scaling of length now done in the call_jags script
 #############################################################################
 
 svl <- data.frame(extract_fun("SVL", "length")) %>%
@@ -79,7 +81,7 @@ fsvl <- inner_join(fcap, svl, by = "Index") %>%
           mutate(length = as.numeric(length)) %>%
           # change length filter here
           filter( length >= 20 & length <= 38) %>%
-          mutate(sc_len = as.numeric(scale(length, center = T, scale = T))) %>%
+          mutate(sc_len = as.numeric(length)) %>%
           select(Index, eh, fm, length, sc_len)
 
 
@@ -117,19 +119,14 @@ ftoe <- inner_join(fwl, toe, by = "Index") %>%
 EH <- data.frame(extract_fun("_Sec", "eh")) 
 
 fEH <- inner_join(ftoe, EH, by = "Index") %>%
-            mutate(cap = eh.y) %>%
-            select(Index, cap, prim, sec, sc_wt, sc_len, toes, ratio)
+            mutate(cap = as.numeric(eh.y %in% c("J", "F", "M", "N", "S"))) %>%
+            select(Index, cap, prim, sec, sc_wt, sc_len, toes, ratio) %>%
+            group_by(Index) %>%
+            filter(cumsum(cap) >= 1) 
+            
+fEH <- as.data.frame(fEH)
 
-for (i in 1:nrow(fEH)){
-  
-  fEH$cap[i] <- ifelse(fEH$cap[i] == "J" | fEH$cap[i] == "F" | 
-                    fEH$cap[i] == "M" | fEH$cap[i] == "N" |
-                    fEH$cap[i] == "S" , 1, 0)
-
-}
-
-
-
+stopifnot(all(fEH$cap %in% c("0", "1")))
 
 return(fEH)
 # end get_data function
@@ -166,6 +163,7 @@ return(fEH)
   
   ##############################################################################
   # extract weight at first capture data
+  #  Edit 6-30-15 SW: scaling of weight now done in the call_jags script
   #############################################################################
   
   wt <- data.frame(extract_fun("Weight", "wt")) %>%
@@ -175,11 +173,12 @@ return(fEH)
     filter(Prim.Sec.First.Marked == fm2 & !is.na(wt)) %>%
     # change weight filter here
     filter( wt >= 0.5 & wt <= 7) %>%
-    mutate(sc_wt = as.numeric(scale(wt, center = T, scale = T))) %>%
+    mutate(sc_wt = as.numeric(wt)) %>%
     select(Index, eh, fm, wt, sc_wt)
   
   ##############################################################################
   # extract length at first capture data
+  #  Edit 6-30-15 SW: scaling of length now done in the call_jags script
   #############################################################################
   
   svl <- data.frame(extract_fun("SVL", "length")) %>%
@@ -190,7 +189,7 @@ return(fEH)
     mutate(length = as.numeric(length)) %>%
     # change length filter here
     filter( length >= 20 & length <= 38) %>%
-    mutate(sc_len = as.numeric(scale(length, center = T, scale = T))) %>%
+    mutate(sc_len = as.numeric(length)) %>%
     select(Index, eh, fm, length, sc_len)
   
   
@@ -227,18 +226,17 @@ return(fEH)
   
   EH <- data.frame(extract_fun("_Sec", "eh")) 
   
+
   fEH <- inner_join(ftoe, EH, by = "Index") %>%
-    mutate(cap = eh.y) %>%
-    select(Index, cap, prim, sec, sc_wt, sc_len, toes, ratio)
+    mutate(cap = as.numeric(eh.y %in% c("J", "F", "M", "N", "S"))) %>%
+    select(Index, cap, prim, sec, sc_wt, sc_len, toes, ratio) %>%
+    group_by(Index) %>%
+    filter(cumsum(cap) >= 1) 
   
-  for (i in 1:nrow(fEH)){
     
-    fEH$cap[i] <- ifelse(fEH$cap[i] == "J" | fEH$cap[i] == "F" | 
-                           fEH$cap[i] == "M" | fEH$cap[i] == "N" |
-                           fEH$cap[i] == "S" , 1, 0)
-    
-  }
+  fEH <- as.data.frame(fEH)
   
+  stopifnot(all(fEH$cap %in% c("0", "1")))
   
   #############################################################################
   # sex of individuals that were juveniles at first capture
