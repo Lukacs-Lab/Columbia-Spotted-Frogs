@@ -45,7 +45,7 @@
 					return_fit = T)		
 					
 		#  Scenario 2 - Toe and length
-		parameters <- c("mean_phi", "p_star", "beta1", "beta2", "pred_surv")
+		parameters <- c("mean_phi", "p_star", "beta1", "beta2", "pred_surv", "mu_phi")
 		fit <- call_jags("toe_n_length_n_n_n",
 					parallel = F,
 					ni = 30000,
@@ -54,7 +54,13 @@
 					nc = 3,
 					debug_mode = F,
 					return_fit = T)		
-					
+		fit
+		mcmcplot(fit)
+		quantile(fit$BUGS$sims.list$mu.phi, probs=c(0.25, 0.75))
+		quantile(fit$BUGS$sims.list$beta1, probs=c(0.25, 0.75))
+		quantile(fit$BUGS$sims.list$beta2, probs=c(0.25, 0.75))
+
+		
 		#  Scenario 3 - Toe and weight
 		parameters <- c("mean_phi", "p_star", "beta1", "beta2", "pred_surv")
 		fit <- call_jags("toe_weight_n_n_n_n",
