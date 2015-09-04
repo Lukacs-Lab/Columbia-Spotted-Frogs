@@ -1,8 +1,39 @@
-mean(sex_dat$sc_wt)				mean(fEH$sc_wt)
-0.3879728									-0.1694245
+		#  Analysis script
+		# Sara Williams
+		#  9/4/2015
+#################################################################################
 
-mean(sex_dat$sc_len)				mean(fEH$sc_len)
-0.7524703									0.0299451
+# Load packages
+library(stringr)
+library(dplyr)
+library(tidyr)
+
+#  Read in data
+x <- read.csv("C:/frog/Frog.csv", as.is = T)
+
+#  Run data extraction function
+source(file.path("C:/Users", 
+				Sys.info()["login"],
+				"Documents/GitHub/Columbia-Spotted-Frogs/data_manip/extract_fun.R"))
+
+#  Run data check function
+source(file.path("C:/Users", 
+				Sys.info()["login"],
+				"Documents/GitHub/Columbia-Spotted-Frogs/data_manip/Data_Check_Prep.R"))
+
+#  Load data sets  
+fEH <- get_data()
+fsex <- get_sex_data() 
+
+mean(sex_dat$sc_wt)				
+mean(fEH$sc_wt)
+#   0.3879728
+#	-0.1694245
+
+mean(sex_dat$sc_len)	
+mean(fEH$sc_len)
+#   0.7524703
+#   0.0299451
 
 boxplot(sex_dat$sc_wt)
 boxplot(fEH$sc_wt)

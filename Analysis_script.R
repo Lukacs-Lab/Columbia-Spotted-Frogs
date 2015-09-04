@@ -54,11 +54,22 @@
 					nc = 3,
 					debug_mode = F,
 					return_fit = T)		
+		
+		#  Diganostics and results saving for top model
 		fit
 		mcmcplot(fit)
-		quantile(fit$BUGS$sims.list$mu.phi, probs=c(0.25, 0.75))
-		quantile(fit$BUGS$sims.list$beta1, probs=c(0.25, 0.75))
-		quantile(fit$BUGS$sims.list$beta2, probs=c(0.25, 0.75))
+		
+		sim_reps_beta1 <- fit$BUGS$sims.list$beta1
+		sim_reps_beta2 <- fit$BUGS$sims.list$beta2
+		sim_reps_mean_phi <- fit$BUGS$sims.list$mu.phi
+		
+		save(sim_reps_beta1, file="sim_reps_beta1.RData")
+		save(sim_reps_beta2, file="sim_reps_beta2.RData")
+		save(sim_reps_mean_phi, file="sim_reps_mean_phi.RData")
+		
+		quantile(sim_reps_beta1, probs=c(0.25, 0.75))
+		quantile(sim_reps_beta2, probs=c(0.25, 0.75))
+		quantile(sim_reps_mean_phi, probs=c(0.25, 0.75))
 
 		
 		#  Scenario 3 - Toe and weight
