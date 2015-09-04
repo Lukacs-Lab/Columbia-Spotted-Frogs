@@ -36,4 +36,16 @@ plot(frog$sc_len, plogis(frog$surv),
      xlab = "Length (scaled and centered)",
      ylab = "Annual Survival",
      type = "l")
+# Add confidence intervals
+
+# Summarize length, weight by sex
+sex <- get_sex_data()
+sex2 <- group_by(sex, Sex) %>%
+  summarise(len = mean(sc_len), len_sd = sd(sc_len), wt = mean(sc_wt), wt_sd = sd(sc_wt))
+
+# Sex      len   len_sd       wt    wt_sd
+# (chr)    (dbl)    (dbl)    (dbl)    (dbl)
+# 1     F 31.68683 4.451490 3.127518 1.372645
+# 2     M 31.31998 4.266771 3.078286 1.402304
+
 
