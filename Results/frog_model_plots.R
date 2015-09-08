@@ -35,7 +35,7 @@ frog <- group_by(fEH, Index) %>%
   summarise(len = mean(sc_len)) %>%
   arrange(len) %>%
   mutate(sc_len = as.numeric(scale(len, center = T)),
-         surv = unscale + beta2 * sc_len)
+					surv = unscale + beta2 * sc_len)
 #################################################################################
 	 
 #  Create credible intervals on plots using iterations from MCMC.
@@ -69,7 +69,7 @@ iter_len <- iter_len$sc_len
 
 #  Create plot
 #   Number of pulls out of MCMC iterations.
-n <- 10000
+n <- 5000
 keep <- sample(1:length(sim_reps_mean_phi), n, replace = F)
 
 plot(iter_len, seq(0,1,length.out=length(iter_len)), 
@@ -77,7 +77,8 @@ plot(iter_len, seq(0,1,length.out=length(iter_len)),
 		ylim=c(0.05, 0.3),
 		main = "Columbia Spotted Frog Annual Survival",
 		xlab = "Length (scaled and centered)",
-		ylab = "Annual Survival")
+		ylab = "Annual Survival", 
+		bty="L")
 
 for (j in 1:n){
 		iter_surv <- iter_unscale[keep[j]] + iter_beta2[keep[j]] * iter_len
@@ -86,3 +87,10 @@ for (j in 1:n){
 
 	#  Add line for length and survival, scaled and centered
 	lines (frog$sc_len, plogis(frog$surv), col="grey40", lwd = 2)
+	
+	
+ lines (lowess(plogis(frog$surv) ~ frog$sc_len), col="red", lwd = 2)
+
+ seq_len <- seq(min(frog$sc_len), max(frog$sc_len), length.out=5000)
+ y <- unscale + beta2*seq_len
+ lines(seq_len, plogis(y), lwd = 1)

@@ -1,15 +1,13 @@
-		#  Analysis script
-		# Sara Williams
-		#  9/4/2015
+# Investigating issues with sex covariate because of length and weight requirements for 
+#  sex determination.
+# Lukacs Lab
+#  9/4/2015
 #################################################################################
 
 # Load packages
 library(stringr)
 library(dplyr)
 library(tidyr)
-
-#  Read in data
-x <- read.csv("C:/frog/Frog.csv", as.is = T)
 
 #  Run data extraction function
 source(file.path("C:/Users", 
@@ -21,65 +19,64 @@ source(file.path("C:/Users",
 				Sys.info()["login"],
 				"Documents/GitHub/Columbia-Spotted-Frogs/data_manip/Data_Check_Prep.R"))
 
-#  Load data sets  
+#  Load data sets and filter for unique individuals
+#   Load data set for all individuals.
+#   Create column for sex_num (whether sex was determined or not).
+#   Set all rows to 0 for sex_num (because this is the data set where sex was not determined).
 fEH <- get_data()
+fEH["sex_num"] <- NA
+fEH$sex_num <- 0
+
+#  Load data set for individuals where sex WAS determined.
+#   Create column for sex_num (whether sex was determined or not).
+#   Set all rows to 1 for sex_num (because this is the data set where sex WAS determined).
 fsex <- get_sex_data() 
+temp_sex <- mutate(fsex, sex_num = ifelse(Sex == "M", 1, 1))
+temp_sex <- select(temp_sex, -Sex)
 
-mean(sex_dat$sc_wt)				
-mean(fEH$sc_wt)
-#   0.3879728
-#	-0.1694245
+#  Bind both data sets together (all rows).
+all_dat <- bind_rows(fEH, temp_sex)
 
-mean(sex_dat$sc_len)	
-mean(fEH$sc_len)
-#   0.7524703
-#   0.0299451
+#  Arrange in descending order by sex_num then select top row for each indivudal.
+temp_dat <- all_dat %>%
+						group_by(Index) %>% 
+						arrange(desc(sex_num)) %>%
+						as.data.frame(.)
+uni_dat <- distinct(temp_dat, Index)
 
-boxplot(sex_dat$sc_wt)
-boxplot(fEH$sc_wt)
+#  Center and scale this uniqified data set for all covariates.	
+uni_dat $sc_wt <- as.numeric(scale(uni_dat $sc_wt))
+uni_dat $sc_len <- as.numeric(scale(uni_dat $sc_len))
+uni_dat $toes <- as.numeric(scale(uni_dat $toes))
 
-summary(sex_dat$sc_wt)
-summary(fEH$sc_wt)
+#  Split up into 2 datasets - one for indivudals where sex was not determined and one for indiviuals
+#   where sex was determined (sex_num = 0 and 1).
+uni_sex_dat <- filter(uni_dat, sex_num > 0)
+uni_all_dat <-  filter(uni_dat, sex_num < 1)
 
+#  Look at means of these two groups
+mean(uni_sex_dat$sc_wt)				
+mean(uni_all_dat$sc_wt)
+#  0.690
+#	-0.114
 
+mean(uni_sex_dat$sc_len)	
+mean(uni_all_dat$sc_len)
+#  0.683
+#  -0.113
 
-		sex_num <- tapply(fsex$Sex, as.numeric(as.factor(fsex$Index)), function(x){
-		ifelse(unique(x) == "M", 0, 1)
-		})
-		
-		sex_num <- as.data.frame(sex_num)
-		
-		sex_index <- fsex %>%  
-							# group_by(Index) %>% 
-							# summarise(sex_info = any(!is.na(Sex)))	
-							
-		temp <- bind_cols(sex_index, sex_num)
-		
-		sex_dat <- inner_join(fsex, temp, by = "Index")
-		
-		cor_dat <- left_join(fEH, sex_dat, by = "Index")
-		new <- select(cor_dat, Index, sc_wt.x,  sc_len.x, toes.x, sex_num)
-		z <- distinct(new)
-		z$sex_num[is.na(z$sex_num)] <- "Unknown"
-		z$sex_num[z$sex_num==1] <- "F"
-		z$sex_num[z$sex_num==0] <- "M"
-		names(z) <- c("index", "weight", "length", "toes", "sex")
-		
-		z %>%
-		group_by(sex) %>%
-		summarise(avg = mean(length))
-		
-		plot(z$weight, z$sex, data=z)
+#  Plot
+par(mfrow=c(2,2))
+boxplot(uni_sex_dat$sc_wt, main = "Weigth - sex determined individuals")
+boxplot(uni_all_dat$sc_wt, main = "Weigth - sex NOT determined individuals")
+boxplot(uni_sex_dat$sc_len, main = "Length - sex determined individuals")
+boxplot(uni_all_dat$sc_len, main = "Length - sex NOT determined individuals")
 
+summary(uni_sex_dat$sc_wt)
+summary(uni_all_dat$sc_wt)
 
-
-		
-		y <- z %>%
-                mutate(sex_info = ifelse(as.character(sex_num) == 2, 0, 1))
-									
-		
-		fit <- aov(sc_wt.x ~ sex_info, data=y)
-		summary(fit) # display Type I ANOVA table
-		drop1(fit,~.,test="F") # type III SS and F Tests
-		plot(fit)
+fit_wt <- lm(uni_dat$sc_wt ~ uni_dat$sex_num, data=uni_dat)
+fit_len <- lm(uni_dat$sc_len ~ uni_dat$sex_num, data=uni_dat)
+summary(fit_wt) 
+summary(fit_len)
 		
