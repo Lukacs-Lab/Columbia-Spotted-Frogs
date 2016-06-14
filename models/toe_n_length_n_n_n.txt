@@ -1,53 +1,53 @@
- 		#  Jags code for frog analysis 
-		#  04/2015
-		#  Lukacs Lab
+     #  Jags code for frog analysis 
+    #  04/2015
+    #  Lukacs Lab
 ####################################################################################################
-	
-		#  Define model - Toe covariate and length covariates
-		model{
-			
-			#  Priors
-			mu_phi ~ dnorm(0, 0.001)T(-5, 5)
-			mu_p ~ dnorm(0, 0.001)T(-5, 5)
-			beta1 ~ dnorm(0, 0.001)T(-5, 5)
-			beta2 ~ dnorm(0, 0.001)T(-5, 5)
-			
-			#  For monitoring
-			mean_phi <- 1/(1 + (exp(-mu_phi)))
-			#	loops over primary sessions
-			for (w in 1:n_prim) {		
-				# loop over secondary sessions to calculate probability of detection
-				for (t in 1:n_sec[w]) {
-					mean_p[w, t] <- 1/(1 + (exp(-mu_p)))
-					temp[w, t] <- 1 - mean_p[w,t]
-				}
-					p_star[w] <- 1 - prod(temp[w, 1:n_sec[w]])
-			}
-			
-			#  Linear predictor
-			for(i in 1:n_ind){
+  
+    #  Define model - Toe covariate and length covariates
+    model{
+      
+      #  Priors
+      mu_phi ~ dnorm(0, 0.001)T(-5, 5)
+      mu_p ~ dnorm(0, 0.001)T(-5, 5)
+      beta1 ~ dnorm(0, 0.001)T(-5, 5)
+      beta2 ~ dnorm(0, 0.001)T(-5, 5)
+      
+      #  For monitoring
+      mean_phi <- 1/(1 + (exp(-mu_phi)))
+      #  loops over primary sessions
+      for (w in 1:n_prim) {    
+        # loop over secondary sessions to calculate probability of detection
+        for (t in 1:n_sec[w]) {
+          mean_p[w, t] <- 1/(1 + (exp(-mu_p)))
+          temp[w, t] <- 1 - mean_p[w,t]
+        }
+          p_star[w] <- 1 - prod(temp[w, 1:n_sec[w]])
+      }
+      
+      #  Linear predictor
+      for(i in 1:n_ind){
         for(j in 1:n_prim){
-       	  logit(phi[i, j]) <- mu_phi + beta1 * toe[i] + beta2 * length[i]
-       	  for(k in 1:n_sec[j]){
+           logit(phi[i, j]) <- mu_phi + beta1 * toe[i] + beta2 * length[i]
+           for(k in 1:n_sec[j]){
             logit(p[i, j, k]) <- mu_p
           }
         }
-			}
+      }
 
-			#  Likelihood
-			for(i in 1:n_ind){
-				for(j in first_occ[i]:n_prim){
-					z[i,j] ~ dbern(phi[i,j])
-				}
-			}
-			
+      #  Likelihood
+      for(i in 1:n_ind){
+        for(j in first_occ[i]:n_prim){
+          z[i,j] ~ dbern(phi[i,j])
+        }
+      }
+      
       #  Observation
-			for(i in 1:n_obs){
+      for(i in 1:n_obs){
         mu2[ind[i], prim[i], sec[i]] <- p[ind[i], prim[i], sec[i]] * z[ind[i], prim[i]]
-    		y[i] ~ dbern(mu2[ind[i], prim[i], sec[i]])
-			}		
-			
-			#  Derived mean survival with all covariates held at their mean (which is 0 because covariates are centered and scaled)
-			pred_surv <- 1/(1 + exp(-mu_phi))
-			
-		}	
+        y[i] ~ dbern(mu2[ind[i], prim[i], sec[i]])
+      }    
+      
+      #  Derived mean survival with all covariates held at their mean (which is 0 because covariates are centered and scaled)
+      pred_surv <- 1/(1 + exp(-mu_phi))
+      
+    }  
