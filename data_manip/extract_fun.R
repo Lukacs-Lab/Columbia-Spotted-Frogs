@@ -31,7 +31,7 @@ extract_fun <- function(col_ext, col_new, sub_0 = T){
   
   if(ncol(tmp) > 2){
     out <- tmp %>%
-            gather(occ, col_new, 2:ncol(.), convert = T) %>%
+            gather_("occ", col_new, names(.[2:ncol(.)]), convert = T) %>%
             arrange(Index) %>% 
             mutate(prim = gsub("[A-Za-z]*([1-9][0-9]?)_.*", "\\1", occ),
                    sec = gsub(".*_[A-Za-z]*([1-9]).*", "\\1", occ)) %>%
