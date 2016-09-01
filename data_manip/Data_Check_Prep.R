@@ -3,8 +3,8 @@
 # Frog Data Extraction
 ################################################################################
 library(stringr)
-library(dplyr)
 library(tidyr)
+library(dplyr)
 ###############################################################################
 # Read in data
 x <- read.csv("C:/frog/Frog.csv", as.is = T)
