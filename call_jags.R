@@ -54,19 +54,20 @@
     fsex <- get_sex_data() 
     
     sex_index <- fsex %>%
-                group_by(Index) %>%               
-        filter(!is.na(Index)) %>%
-                mutate(sex_num = ifelse(as.character(Sex) == "F", 1, 0))
+                          group_by(Index) %>%               
+                          filter(!is.na(Index)) %>%
+                          mutate(sex_num = ifelse(as.character(Sex) == "F", 1, 0)) %>%
+                          ungroup(.) %>%
+                          as.data.frame(.)
                 
         
-    sex_dat <- ungroup(sex_index) %>%
-        mutate(toes = as.numeric(scale(toes))) %>%
-              group_by(Index) %>%
-                summarise(sex = unique(sex_num),
-                            toe = unique(toes),
-                            length = unique(sc_len),
-                            weight = unique(sc_wt))
-
+    sex_dat <- sex_index %>%
+                      mutate(toes = as.numeric(toes)) %>%
+                      group_by(Index) %>%
+                      slice(1) %>%
+                      ungroup(.) %>%
+                      as.data.frame(.)
+    sex_dat$Sex <- as.factor(sex_dat$Sex)
 
 
     y <- as.numeric(fsex$cap)  
@@ -104,11 +105,11 @@
     # sex_dat <- select(sex_dat, -sex_info)
     
     
-    # sex <- as.numeric(tapply(as.numeric(sex_dat$sex_num), ind, unique))
-    # toe <- as.numeric(tapply(as.numeric(sex_dat$toes), ind, unique))
-    # toe <- as.numeric(scale(toe))
-    # length <- as.numeric(tapply(as.numeric(sex_dat$sc_len), ind, unique))
-    # weight <- as.numeric(tapply(as.numeric(sex_dat$sc_wt), ind, unique))
+    sex <- as.numeric(tapply(as.numeric(sex_dat$sex_num), ind, unique))
+    toe <- as.numeric(tapply(as.numeric(sex_dat$toes), ind, unique))
+    toe <- as.numeric(scale(toe))
+    length <- as.numeric(tapply(as.numeric(sex_dat$sc_len), ind, unique))
+    weight <- as.numeric(tapply(as.numeric(sex_dat$sc_wt), ind, unique))
   
     
     # Bundle data
